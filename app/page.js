@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
-import { auth } from '@/lib/firebase';
-import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -13,11 +11,7 @@ export default function Home() {
   const [formData, setFormData] = useState({ name: '', mobile: '', email: '' });
   
   const [otpSent, setOtpSent] = useState(false);
-  const [mobileOtp, setMobileOtp] = useState('');
   const [emailOtp, setEmailOtp] = useState('');
-  
-  // To hold the Firebase confirmation object
-  const [confirmationResult, setConfirmationResult] = useState(null);
   
   const [submitState, setSubmitState] = useState({ loading: false, success: false, error: '' });
 
@@ -29,33 +23,12 @@ export default function Home() {
     setSelectedProduct(productName);
     setModalOpen(true);
     setOtpSent(false);
-    setMobileOtp('');
     setEmailOtp('');
     setSubmitState({ loading: false, success: false, error: '' });
   };
 
-  useEffect(() => {
-    if (modalOpen && !window.recaptchaVerifier) {
-      // Must wait for the DOM to render the recaptcha-container first
-      setTimeout(() => {
-        try {
-          window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-            size: 'invisible'
-          });
-        } catch (err) {
-          console.error("Recaptcha Init Error:", err);
-        }
-      }, 100);
-    }
-  }, [modalOpen]);
-
   const closeModal = () => {
     setModalOpen(false);
-    // Best practice to clear recaptcha widgets if closing
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-      window.recaptchaVerifier = null;
-    }
   };
 
   const handleSendOTP = async (e) => {
@@ -70,13 +43,7 @@ export default function Home() {
     }
 
     try {
-      // 1. Send SMS OTP via Firebase
-      const phoneNumber = '+91' + formData.mobile;
-      const appVerifier = window.recaptchaVerifier;
-      const confResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-      setConfirmationResult(confResult);
-
-      // 2. Send Email OTP via Backend
+      // 1. Send Email OTP via Backend ONLY
       const emailRes = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,13 +60,7 @@ export default function Home() {
       
     } catch (err) {
       console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Verification Error. Check mobile number or recaptcha.' });
-      // Reset recaptcha on error so user can try again
-      if (window.recaptchaVerifier) {
-        window.recaptchaVerifier.render().then(widgetId => {
-          grecaptcha.reset(widgetId);
-        });
-      }
+      setSubmitState({ loading: false, success: false, error: err.message || 'Error communicating with server.' });
     }
   };
 
@@ -107,15 +68,12 @@ export default function Home() {
     e.preventDefault();
     setSubmitState({ loading: true, success: false, error: '' });
 
-    if (!mobileOtp || !emailOtp) {
-      return setSubmitState({ loading: false, success: false, error: 'Both Mobile and Email OTPs are required' });
+    if (!emailOtp) {
+      return setSubmitState({ loading: false, success: false, error: 'Email OTP is required to verify your request.' });
     }
 
     try {
-      // 1. Verify Mobile OTP (Firebase)
-      await confirmationResult.confirm(mobileOtp);
-
-      // 2. Verify Email OTP (Backend)
+      // 1. Verify Email OTP (Backend)
       const verifyRes = await fetch('/api/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -127,7 +85,7 @@ export default function Home() {
         throw new Error(vData.error || 'Invalid Email OTP');
       }
 
-      // 3. Submit Lead to Backend
+      // 2. Submit Lead to Backend with Unverified Mobile
       const leadRes = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -150,7 +108,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Verification failed. Incorrect OTPs.' });
+      setSubmitState({ loading: false, success: false, error: err.message || 'Verification failed. Incorrect OTP.' });
     }
   };
 
@@ -283,7 +241,7 @@ export default function Home() {
             {submitState.success ? (
               <div className="success-msg">
                 <ShieldCheck size={48} className="text-success mx-auto" />
-                <p>Verify Success! Our team will contact you shortly.</p>
+                <p>Verification Success! Our team has been notified and will contact you shortly.</p>
               </div>
             ) : (
               <form onSubmit={otpSent ? handleVerifyAndSubmit : handleSendOTP} className="lead-form">
@@ -300,16 +258,6 @@ export default function Home() {
                       />
                     </div>
                     <div className="form-group">
-                      <label>Email Address</label>
-                      <input 
-                        type="email" 
-                        placeholder="Enter email for verification" 
-                        value={formData.email} 
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
-                        disabled={submitState.loading}
-                      />
-                    </div>
-                    <div className="form-group">
                       <label>Mobile Number</label>
                       <input 
                         type="tel" 
@@ -320,25 +268,22 @@ export default function Home() {
                         disabled={submitState.loading}
                       />
                     </div>
-                    <div id="recaptcha-container"></div>
+                    <div className="form-group">
+                      <label>Email Address</label>
+                      <input 
+                        type="email" 
+                        placeholder="Enter email to receive OTP" 
+                        value={formData.email} 
+                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                        disabled={submitState.loading}
+                      />
+                    </div>
                   </>
                 ) : (
                   <>
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
-                      Security check: We just sent verification codes to both your mobile and email. Please enter both below to proceed.
+                      Security check: We just sent a 6-Digit code to <strong>{formData.email}</strong>. Please enter it below.
                     </p>
-                    
-                    <div className="form-group">
-                      <label>Mobile OTP (SMS)</label>
-                      <input 
-                        type="text" 
-                        placeholder="Enter 6-Digit SMS Code" 
-                        value={mobileOtp} 
-                        onChange={e => setMobileOtp(e.target.value)}
-                        maxLength={6}
-                        disabled={submitState.loading}
-                      />
-                    </div>
 
                     <div className="form-group">
                       <label>Email OTP (Check Inbox!)</label>
@@ -358,7 +303,7 @@ export default function Home() {
                 <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
                   {submitState.loading 
                     ? 'Processing...' 
-                    : (otpSent ? 'Securely Verify & Submit' : 'Send Verification OTPs')}
+                    : (otpSent ? 'Securely Verify & Submit Request' : 'Send Verification OTP to Email')}
                 </button>
               </form>
             )}
