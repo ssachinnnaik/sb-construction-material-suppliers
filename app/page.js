@@ -32,14 +32,22 @@ export default function Home() {
     setMobileOtp('');
     setEmailOtp('');
     setSubmitState({ loading: false, success: false, error: '' });
-
-    // Initialize recaptcha when modal opens
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible'
-      });
-    }
   };
+
+  useEffect(() => {
+    if (modalOpen && !window.recaptchaVerifier) {
+      // Must wait for the DOM to render the recaptcha-container first
+      setTimeout(() => {
+        try {
+          window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+            size: 'invisible'
+          });
+        } catch (err) {
+          console.error("Recaptcha Init Error:", err);
+        }
+      }, 100);
+    }
+  }, [modalOpen]);
 
   const closeModal = () => {
     setModalOpen(false);
