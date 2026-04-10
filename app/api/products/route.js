@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
-import fs from 'fs';
+import supabase from '@/lib/db';
 import path from 'path';
 
 // Handle Next.js body parser limits if needed (optional)
@@ -12,9 +11,12 @@ export const config = {
 
 export async function GET() {
   try {
-    const products = db.prepare('SELECT * FROM products').all();
+    const { data: products, error } = await supabase.from('products').select('*');
+    if (error) throw error;
+    
     return NextResponse.json({ products });
   } catch (error) {
+    console.error('Fetch products error:', error);
     return NextResponse.json({ error: 'Database error' }, { status: 500 });
   }
 }
@@ -35,33 +37,54 @@ export async function POST(req) {
     let img_path = '';
 
     if (file && typeof file.arrayBuffer === 'function') {
-      const buffer = Buffer.from(await file.arrayBuffer());
+      const buffer = await file.arrayBuffer();
       const ext = path.extname(file.name) || '.png';
       const fileName = `${id}-${Date.now()}${ext}`;
       
-      const dataDir = process.env.DATA_DIR;
-      const uploadDir = path.join(dataDir || process.cwd(), dataDir ? 'uploads' : 'public/uploads');
+      const { data, error } = await supabase.storage
+        .from('products')
+        .upload(fileName, buffer, {
+          contentType: file.type || 'image/png',
+          upsert: true
+        });
 
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
+      if (error) {
+        throw new Error(`Storage upload error: ${error.message}`);
       }
-      
-      const filePath = path.join(uploadDir, fileName);
-      fs.writeFileSync(filePath, buffer);
-      img_path = dataDir ? `/api/uploads/${fileName}` : `/uploads/${fileName}`;
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from('products')
+        .getPublicUrl(fileName);
+        
+      img_path = publicUrlData.publicUrl;
     } else {
       return NextResponse.json({ error: 'Invalid file format' }, { status: 400 });
     }
 
-    const insert = db.prepare('INSERT INTO products (id, name, desc, price, img_path) VALUES (?, ?, ?, ?, ?)');
-    insert.run(id, name, desc, price, img_path);
+    const { error: dbError } = await supabase
+      .from('products')
+      .insert([
+        {
+          id,
+          name,
+          desc,
+          price,
+          img_path
+        }
+      ]);
+
+    if (dbError) {
+      if (dbError.code === '23505') { // Postgres unique violation (Primary Key)
+        return NextResponse.json({ error: 'Product ID already exists' }, { status: 400 });
+      }
+      throw dbError;
+    }
 
     return NextResponse.json({ success: true, img_path });
 
   } catch (error) {
-    if (error.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
-      return NextResponse.json({ error: 'Product ID already exists' }, { status: 400 });
-    }
+    console.error('Failed to create product:', error);
     return NextResponse.json({ error: 'Failed to create product' }, { status: 500 });
   }
 }

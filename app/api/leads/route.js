@@ -1,4 +1,4 @@
-import db from '@/lib/db';
+import supabase from '@/lib/db';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -18,12 +18,25 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Mobile number must be exactly 10 digits' }, { status: 400 });
     }
 
-    const stmt = db.prepare(`
-      INSERT INTO leads (name, mobile_number, email, product_interest, status)
-      VALUES (?, ?, ?, ?, 'Requested')
-    `);
+    const { data, error } = await supabase
+      .from('leads')
+      .insert([
+        {
+          name,
+          mobile_number,
+          email,
+          product_interest: product_interest || 'General',
+          status: 'Requested',
+          contacted: 0
+        }
+      ])
+      .select()
+      .single();
 
-    const result = stmt.run(name, mobile_number, email, product_interest || 'General');
+    if (error) {
+      console.error('Supabase insert error:', error);
+      throw error;
+    }
 
     // Send Email Notifications
     try {
@@ -60,10 +73,9 @@ export async function POST(request) {
       }
     } catch (emailError) {
       console.error('Failed to send email notifications:', emailError);
-      // Proceed without failing the lead capture
     }
 
-    return NextResponse.json({ success: true, id: result.lastInsertRowid }, { status: 201 });
+    return NextResponse.json({ success: true, id: data.id }, { status: 201 });
   } catch (error) {
     console.error('Submit lead error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
@@ -72,8 +84,15 @@ export async function POST(request) {
 
 export async function GET() {
   try {
-    const stmt = db.prepare(`SELECT * FROM leads ORDER BY timestamp DESC`);
-    const leads = stmt.all();
+    const { data: leads, error } = await supabase
+      .from('leads')
+      .select('*')
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
     return NextResponse.json(leads, { status: 200 });
   } catch (error) {
     console.error('Get leads error:', error);

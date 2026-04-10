@@ -1,4 +1,4 @@
-import db from '@/lib/db';
+import supabase from '@/lib/db';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
 
@@ -12,10 +12,14 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Status is required' }, { status: 400 });
     }
 
-    const stmt = db.prepare(`UPDATE leads SET status = ? WHERE id = ? RETURNING *`);
-    const result = stmt.get(status, id);
+    const { data: result, error } = await supabase
+      .from('leads')
+      .update({ status })
+      .eq('id', id)
+      .select()
+      .single();
 
-    if (!result) {
+    if (error || !result) {
       return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
     }
 

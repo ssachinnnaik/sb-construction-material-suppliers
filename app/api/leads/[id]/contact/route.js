@@ -1,4 +1,4 @@
-import db from '@/lib/db';
+import supabase from '@/lib/db';
 import { NextResponse } from 'next/server';
 
 export async function PUT(request, { params }) {
@@ -6,8 +6,14 @@ export async function PUT(request, { params }) {
     const { id } = params;
     const { contacted } = await request.json();
     
-    const stmt = db.prepare(`UPDATE leads SET contacted = ? WHERE id = ?`);
-    stmt.run(contacted ? 1 : 0, id);
+    const { error } = await supabase
+      .from('leads')
+      .update({ contacted: contacted ? 1 : 0 })
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
 
     return NextResponse.json({ success: true });
   } catch (error) {

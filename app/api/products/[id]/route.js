@@ -1,32 +1,44 @@
 import { NextResponse } from 'next/server';
-import db from '@/lib/db';
-import fs from 'fs';
-import path from 'path';
+import supabase from '@/lib/db';
 
 export async function DELETE(req, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
 
     // fetch product to delete image
-    const product = db.prepare('SELECT img_path FROM products WHERE id = ?').get(id);
+    const { data: product, error: fetchError } = await supabase
+      .from('products')
+      .select('img_path')
+      .eq('id', id)
+      .single();
     
-    if (product && product.img_path && product.img_path.startsWith('/uploads/')) {
-      const fileName = product.img_path.replace('/uploads/', '');
-      const filePath = path.join(process.cwd(), 'public', 'uploads', fileName);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
+    if (product && product.img_path) {
+      // Extract filename from public URL if it points to Supabase Storage
+      // A typical URL looks like: https://[ref].supabase.co/storage/v1/object/public/products/filename.png
+      const parts = product.img_path.split('/');
+      const fileName = parts[parts.length - 1];
+      
+      if (fileName) {
+        await supabase.storage.from('products').remove([fileName]);
       }
     }
 
-    const del = db.prepare('DELETE FROM products WHERE id = ?');
-    const info = del.run(id);
+    const { error: delError, count } = await supabase
+      .from('products')
+      .delete({ count: 'exact' })
+      .eq('id', id);
 
-    if (info.changes > 0) {
+    if (delError) {
+      throw delError;
+    }
+
+    if (count > 0) {
       return NextResponse.json({ success: true });
     } else {
       return NextResponse.json({ error: 'Product not found' }, { status: 404 });
     }
   } catch (error) {
+    console.error('Failed to delete product', error);
     return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
   }
 }
