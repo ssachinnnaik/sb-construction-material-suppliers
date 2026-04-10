@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: sb-construction
+    env: node
+    plan: starter # Starter plan is required to attach disks
+    buildCommand: "npm install && npm run build"
+    startCommand: "npm run start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATA_DIR
+        value: /var/data
+    disk:
+      name: data
+      mountPath: /var/data
+      sizeGB: 1

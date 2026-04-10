@@ -39,14 +39,16 @@ export async function POST(req) {
       const ext = path.extname(file.name) || '.png';
       const fileName = `${id}-${Date.now()}${ext}`;
       
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      const dataDir = process.env.DATA_DIR;
+      const uploadDir = path.join(dataDir || process.cwd(), dataDir ? 'uploads' : 'public/uploads');
+
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }
       
       const filePath = path.join(uploadDir, fileName);
       fs.writeFileSync(filePath, buffer);
-      img_path = `/uploads/${fileName}`;
+      img_path = dataDir ? `/api/uploads/${fileName}` : `/uploads/${fileName}`;
     } else {
       return NextResponse.json({ error: 'Invalid file format' }, { status: 400 });
     }
