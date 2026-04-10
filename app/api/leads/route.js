@@ -63,7 +63,7 @@ export async function POST(request) {
           from: process.env.EMAIL_USER,
           to: email,
           subject: `Order Received: Welcome to SB Construction!`,
-          text: `Dear ${name},\n\nWelcome to SB Construction! We have received your request for ${product_interest || 'General'}.\n\nOur team is currently reviewing your order and will contact you at ${mobile_number} shortly to confirm details.\n\nThank you for trusting us with your construction needs.\n\nBest Regards,\nSB Construction Team`,
+          text: `Dear ${name},\n\nGreetings from SB Construction!\n\nWe have successfully received your verification and registered your profile. \n\nThank you for choosing us for your construction material needs. Transparency and Quality are our top priorities.\n\n=== YOUR BOOKING DETAILS ===\nProduct Requested: ${product_interest || 'General Enquiry'}\nMobile Linked: ${mobile_number}\n\nOur administrative team has been notified and we will contact you shortly to confirm the exact delivery details and transport dispatch.\n\n=== CONTACT US ===\nIf you have any urgent queries regarding this booking, please reach out to us at:\nPhone: +91 9490 057 579\nEmail: sbmcontact5886@gmail.com\n\nThanks & Regards,\nSB Construction Team`,
         };
         await transporter.sendMail(customerMailOptions);
         
