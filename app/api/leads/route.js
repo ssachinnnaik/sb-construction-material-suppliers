@@ -18,7 +18,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Mobile number must be exactly 10 digits' }, { status: 400 });
     }
 
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from('leads')
       .insert([
         {
@@ -35,6 +35,28 @@ export async function POST(request) {
       ])
       .select()
       .single();
+
+    // Fallback: If columns are missing in DB (PGRST204), try basic insert
+    if (error && (error.code === 'PGRST204' || error.message?.includes('column'))) {
+      console.warn('New lead columns missing in DB, falling back to basic insert:', error.message);
+      const basicInsert = await supabase
+        .from('leads')
+        .insert([
+          {
+            name,
+            mobile_number,
+            email,
+            product_interest: `${product_interest || 'General'} (Qty: ${required_quantity}, Loc: ${delivery_location})`,
+            status: 'Requested',
+            contacted: 0
+          }
+        ])
+        .select()
+        .single();
+      
+      data = basicInsert.data;
+      error = basicInsert.error;
+    }
 
     if (error) {
       console.error('Supabase insert error:', error);
