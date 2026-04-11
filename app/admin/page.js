@@ -41,9 +41,9 @@ export default function AdminPage() {
 
   const exportCSV = () => {
     if (!leads.length) return;
-    const header = ['ID', 'Name', 'Mobile', 'Email', 'Product', 'Date', 'Status'];
+    const header = ['ID', 'Name', 'Mobile', 'Email', 'Product', 'Quantity', 'Location', 'Upcoming Needs', 'Date', 'Status'];
     const rows = leads.map(l => [
-      l.id, `"${l.name}"`, l.mobile_number, l.email, `"${l.product_interest}"`, `"${new Date(l.timestamp).toLocaleString()}"`, l.status
+      l.id, `"${l.name}"`, l.mobile_number, l.email, `"${l.product_interest}"`, `"${l.required_quantity}"`, `"${l.delivery_location}"`, `"${l.upcoming_load}"`, `"${new Date(l.timestamp).toLocaleString()}"`, l.status
     ]);
     const csvContent = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -95,7 +95,8 @@ export default function AdminPage() {
                   <th>ID</th>
                   <th>Name</th>
                   <th>Contact Info</th>
-                  <th>Product Interest</th>
+                  <th>Product & Quantity</th>
+                  <th>Location & Future</th>
                   <th>Date</th>
                   <th>Status</th>
                 </tr>
@@ -109,8 +110,17 @@ export default function AdminPage() {
                       <div>{lead.mobile_number}</div>
                       <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{lead.email}</div>
                     </td>
-                    <td><span className="badge">{lead.product_interest}</span></td>
-                    <td>{new Date(lead.timestamp).toLocaleDateString()} {new Date(lead.timestamp).toLocaleTimeString()}</td>
+                    <td>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                        <span className="badge">{lead.product_interest}</span>
+                        <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}>Qty: {lead.required_quantity}</div>
+                      </div>
+                    </td>
+                    <td>
+                      <div style={{ fontSize: '0.85rem' }}>{lead.delivery_location}</div>
+                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Next: {lead.upcoming_load}</div>
+                    </td>
+                    <td><div style={{ fontSize: '0.85rem' }}>{new Date(lead.timestamp).toLocaleDateString()}</div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(lead.timestamp).toLocaleTimeString()}</div></td>
                     <td>
                       <select 
                         value={lead.status || 'Requested'} 

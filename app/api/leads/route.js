@@ -5,7 +5,7 @@ import nodemailer from 'nodemailer';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, mobile_number, product_interest, email } = body;
+    const { name, mobile_number, product_interest, email, delivery_location, required_quantity, upcoming_load } = body;
 
     // Validation
     if (!name || !mobile_number || !email) {
@@ -26,6 +26,9 @@ export async function POST(request) {
           mobile_number,
           email,
           product_interest: product_interest || 'General',
+          delivery_location: delivery_location || 'Not Specified',
+          required_quantity: required_quantity || 'Not Specified',
+          upcoming_load: upcoming_load || 'None',
           status: 'Requested',
           contacted: 0
         }
@@ -49,7 +52,7 @@ export async function POST(request) {
           from: 'SB Construction <onboarding@resend.dev>',
           to: ['sachinnaik.juo@gmail.com'], // using registered email
           subject: `New Order Requested: ${name} - SB Construction`,
-          text: `You have received a new order request!\n\nName: ${name}\nMobile Number: ${mobile_number}\nEmail: ${email}\nProduct Interest: ${product_interest || 'General'}\n\nPlease check your admin dashboard to process this order.`,
+          text: `You have received a new order request!\n\nName: ${name}\nMobile Number: ${mobile_number}\nEmail: ${email}\nProduct Interest: ${product_interest || 'General'}\nQuantity Needed: ${required_quantity || 'N/A'}\nDelivery Location: ${delivery_location || 'N/A'}\nUpcoming Needs: ${upcoming_load || 'N/A'}\n\nPlease check your admin dashboard to process this order.`,
         });
 
         // 2. Customer Welcome & Confirmation Email
@@ -57,7 +60,7 @@ export async function POST(request) {
           from: 'SB Construction <onboarding@resend.dev>',
           to: [email],
           subject: `Order Received: Welcome to SB Construction!`,
-          text: `Dear ${name},\n\nGreetings from SB Construction!\n\nWe have successfully received your verification and registered your profile. \n\nThank you for choosing us for your construction material needs. Transparency and Quality are our top priorities.\n\n=== YOUR BOOKING DETAILS ===\nProduct Requested: ${product_interest || 'General Enquiry'}\nMobile Linked: ${mobile_number}\n\nOur administrative team has been notified and we will contact you shortly to confirm the exact delivery details and transport dispatch.\n\n=== CONTACT US ===\nIf you have any urgent queries regarding this booking, please reach out to us at:\nPhone: +91 9490 057 579\nEmail: sbmcontact5886@gmail.com\n\nThanks & Regards,\nSB Construction Team`,
+          text: `Dear ${name},\n\nGreetings from SB Construction!\n\nWe have successfully received your verification and registered your profile. \n\nThank you for choosing us for your construction material needs. Transparency and Quality are our top priorities.\n\n=== YOUR BOOKING DETAILS ===\nProduct Requested: ${product_interest || 'General Enquiry'}\nQuantity Needed: ${required_quantity || 'N/A'}\nDelivery Site: ${delivery_location || 'N/A'}\nMobile Linked: ${mobile_number}\n\nOur administrative team has been notified and we will contact you shortly to confirm the exact delivery details and transport dispatch.\n\n=== CONTACT US ===\nIf you have any urgent queries regarding this booking, please reach out to us at:\nPhone: +91 9490 057 579\nEmail: sbmcontact5886@gmail.com\n\nThanks & Regards,\nSB Construction Team`,
         });
         
         console.log(`Emails successfully sent for lead ${name} via Resend.`);

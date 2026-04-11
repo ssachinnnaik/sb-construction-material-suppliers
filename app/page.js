@@ -8,11 +8,11 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalStage, setModalStage] = useState('CONTACT'); // CONTACT, OTP, DETAILS
   const [formData, setFormData] = useState({ name: '', mobile: '', email: '' });
+  const [orderDetails, setOrderDetails] = useState({ quantity: '', location: '', upcoming: '' });
   
-  const [otpSent, setOtpSent] = useState(false);
   const [emailOtp, setEmailOtp] = useState('');
-  
   const [submitState, setSubmitState] = useState({ loading: false, success: false, error: '' });
 
   useEffect(() => {
@@ -22,8 +22,9 @@ export default function Home() {
   const openModal = (productName) => {
     setSelectedProduct(productName);
     setModalOpen(true);
-    setOtpSent(false);
+    setModalStage('CONTACT');
     setEmailOtp('');
+    setOrderDetails({ quantity: '', location: '', upcoming: '' });
     setSubmitState({ loading: false, success: false, error: '' });
   };
 
@@ -43,7 +44,7 @@ export default function Home() {
     }
 
     try {
-      // 1. Send Email OTP via Backend ONLY
+      // 1. Send Email OTP via Backend
       const emailRes = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -55,7 +56,7 @@ export default function Home() {
         throw new Error(emailData.error || 'Failed to send Email OTP');
       }
 
-      setOtpSent(true);
+      setModalStage('OTP');
       setSubmitState({ loading: false, success: false, error: '' });
       
     } catch (err) {
@@ -64,16 +65,15 @@ export default function Home() {
     }
   };
 
-  const handleVerifyAndSubmit = async (e) => {
+  const handleVerifyOTP = async (e) => {
     e.preventDefault();
     setSubmitState({ loading: true, success: false, error: '' });
 
     if (!emailOtp) {
-      return setSubmitState({ loading: false, success: false, error: 'Email OTP is required to verify your request.' });
+      return setSubmitState({ loading: false, success: false, error: 'Email OTP is required.' });
     }
 
     try {
-      // 1. Verify Email OTP (Backend)
       const verifyRes = await fetch('/api/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -85,7 +85,19 @@ export default function Home() {
         throw new Error(vData.error || 'Invalid Email OTP');
       }
 
-      // 2. Submit Lead to Backend with Unverified Mobile
+      setModalStage('DETAILS');
+      setSubmitState({ loading: false, success: false, error: '' });
+    } catch (err) {
+      console.error(err);
+      setSubmitState({ loading: false, success: false, error: err.message || 'Verification failed.' });
+    }
+  };
+
+  const handleSubmitFinal = async (e) => {
+    e.preventDefault();
+    setSubmitState({ loading: true, success: false, error: '' });
+
+    try {
       const leadRes = await fetch('/api/leads', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -93,14 +105,17 @@ export default function Home() {
           name: formData.name, 
           mobile_number: formData.mobile, 
           email: formData.email,
-          product_interest: selectedProduct || 'General Inquiry' 
+          product_interest: selectedProduct || 'General Inquiry',
+          required_quantity: orderDetails.quantity,
+          delivery_location: orderDetails.location,
+          upcoming_load: orderDetails.upcoming
         })
       });
 
       if (leadRes.ok) {
         setSubmitState({ loading: false, success: true, error: '' });
         setFormData({ name: '', mobile: '', email: '' });
-        setOtpSent(false);
+        setOrderDetails({ quantity: '', location: '', upcoming: '' });
         setTimeout(() => closeModal(), 3000);
       } else {
         const lData = await leadRes.json();
@@ -108,7 +123,7 @@ export default function Home() {
       }
     } catch (err) {
       console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Verification failed. Incorrect OTP.' });
+      setSubmitState({ loading: false, success: false, error: err.message || 'Submission failed.' });
     }
   };
 
@@ -244,9 +259,9 @@ export default function Home() {
                 <p>Verification Success! Our team has been notified and will contact you shortly.</p>
               </div>
             ) : (
-              <form onSubmit={otpSent ? handleVerifyAndSubmit : handleSendOTP} className="lead-form">
-                {!otpSent ? (
-                  <>
+              <div className="lead-modal-stages">
+                {modalStage === 'CONTACT' && (
+                  <form onSubmit={handleSendOTP} className="lead-form">
                     <div className="form-group">
                       <label>Name</label>
                       <input 
@@ -255,6 +270,7 @@ export default function Home() {
                         value={formData.name} 
                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                         disabled={submitState.loading}
+                        required
                       />
                     </div>
                     <div className="form-group">
@@ -266,6 +282,7 @@ export default function Home() {
                         onChange={e => setFormData({ ...formData, mobile: e.target.value })}
                         maxLength={10}
                         disabled={submitState.loading}
+                        required
                       />
                     </div>
                     <div className="form-group">
@@ -276,15 +293,21 @@ export default function Home() {
                         value={formData.email} 
                         onChange={e => setFormData({ ...formData, email: e.target.value })}
                         disabled={submitState.loading}
+                        required
                       />
                     </div>
-                  </>
-                ) : (
-                  <>
+                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
+                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
+                      {submitState.loading ? 'Processing...' : 'Send Verification OTP to Email'}
+                    </button>
+                  </form>
+                )}
+
+                {modalStage === 'OTP' && (
+                  <form onSubmit={handleVerifyOTP} className="lead-form">
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
                       Security check: We just sent a 6-Digit code to <strong>{formData.email}</strong>. Please enter it below.
                     </p>
-
                     <div className="form-group">
                       <label>Email OTP (Check Inbox!)</label>
                       <input 
@@ -294,18 +317,60 @@ export default function Home() {
                         onChange={e => setEmailOtp(e.target.value)}
                         maxLength={6}
                         disabled={submitState.loading}
+                        required
                       />
                     </div>
-                  </>
+                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
+                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
+                      {submitState.loading ? 'Verifying...' : 'Verify OTP'}
+                    </button>
+                  </form>
                 )}
-                {submitState.error && <p className="error-msg">{submitState.error}</p>}
-                
-                <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                  {submitState.loading 
-                    ? 'Processing...' 
-                    : (otpSent ? 'Securely Verify & Submit Request' : 'Send Verification OTP to Email')}
-                </button>
-              </form>
+
+                {modalStage === 'DETAILS' && (
+                  <form onSubmit={handleSubmitFinal} className="lead-form">
+                    <p style={{ fontSize: '0.85rem', color: 'var(--primary)', marginBottom: '1.5rem', fontWeight: '600' }}>
+                      ✅ Email Verified! Please provide your order details to proceed.
+                    </p>
+                    <div className="form-group">
+                      <label>Actual Quantity Needed</label>
+                      <input 
+                        type="text" 
+                        placeholder="e.g. 5 Loads / 3000 Bricks" 
+                        value={orderDetails.quantity} 
+                        onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })}
+                        disabled={submitState.loading}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Delivery Site Location</label>
+                      <input 
+                        type="text" 
+                        placeholder="Full address or landmark" 
+                        value={orderDetails.location} 
+                        onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })}
+                        disabled={submitState.loading}
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Upcoming Load Quantity (Optional)</label>
+                      <input 
+                        type="text" 
+                        placeholder="Any future requirements?" 
+                        value={orderDetails.upcoming} 
+                        onChange={e => setOrderDetails({ ...orderDetails, upcoming: e.target.value })}
+                        disabled={submitState.loading}
+                      />
+                    </div>
+                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
+                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
+                      {submitState.loading ? 'Submitting...' : 'Confirm & Submit Order'}
+                    </button>
+                  </form>
+                )}
+              </div>
             )}
           </div>
         </div>

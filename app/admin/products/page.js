@@ -14,7 +14,6 @@ export default function AdminProducts() {
     name: '',
     desc: '',
     price: '',
-    price: '',
     image: null
   });
   
