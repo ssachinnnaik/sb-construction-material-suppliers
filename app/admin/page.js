@@ -8,6 +8,20 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
+  // Helper to parse fallback data if DB columns are missing
+  const parseLeadData = (lead) => {
+    const data = { ...lead };
+    if (lead.product_interest && lead.product_interest.includes(' | Qty:')) {
+      const parts = lead.product_interest.split(' | ');
+      data.product_interest = parts[0];
+      parts.forEach(p => {
+        if (p.startsWith('Qty:')) data.required_quantity = p.replace('Qty:', '').trim();
+        if (p.startsWith('Loc:')) data.delivery_location = p.replace('Loc:', '').trim();
+      });
+    }
+    return data;
+  };
+
   const fetchLeads = async () => {
     setLoading(true);
     try {
@@ -42,9 +56,12 @@ export default function AdminPage() {
   const exportCSV = () => {
     if (!leads.length) return;
     const header = ['ID', 'Name', 'Mobile', 'Email', 'Product', 'Quantity', 'Location', 'Upcoming Needs', 'Date', 'Status'];
-    const rows = leads.map(l => [
-      l.id, `"${l.name}"`, l.mobile_number, l.email, `"${l.product_interest}"`, `"${l.required_quantity}"`, `"${l.delivery_location}"`, `"${l.upcoming_load}"`, `"${new Date(l.timestamp).toLocaleString()}"`, l.status
-    ]);
+    const rows = leads.map(l => {
+      const parsed = parseLeadData(l);
+      return [
+        parsed.id, `"${parsed.name}"`, parsed.mobile_number, parsed.email, `"${parsed.product_interest}"`, `"${parsed.required_quantity || ''}"`, `"${parsed.delivery_location || ''}"`, `"${parsed.upcoming_load || ''}"`, `"${new Date(parsed.timestamp).toLocaleString()}"`, parsed.status
+      ];
+    });
     const csvContent = [header.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
@@ -102,48 +119,51 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredLeads.map(lead => (
-                  <tr key={lead.id} className={lead.status === 'Completed' ? 'row-completed' : ''}>
-                    <td>#{lead.id}</td>
-                    <td style={{ fontWeight: '600' }}>{lead.name}</td>
-                    <td>
-                      <div>{lead.mobile_number}</div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{lead.email}</div>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
-                        <span className="badge">{lead.product_interest}</span>
-                        <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}>Qty: {lead.required_quantity}</div>
-                      </div>
-                    </td>
-                    <td>
-                      <div style={{ fontSize: '0.85rem' }}>{lead.delivery_location}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Next: {lead.upcoming_load}</div>
-                    </td>
-                    <td><div style={{ fontSize: '0.85rem' }}>{new Date(lead.timestamp).toLocaleDateString()}</div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(lead.timestamp).toLocaleTimeString()}</div></td>
-                    <td>
-                      <select 
-                        value={lead.status || 'Requested'} 
-                        onChange={(e) => changeStatus(lead.id, e.target.value)}
-                        style={{
-                          background: 'rgba(61, 82, 160, 0.4)',
-                          color: '#EDE8F5',
-                          border: '1px solid var(--border-color)',
-                          padding: '0.4rem',
-                          borderRadius: '4px',
-                          outline: 'none'
-                        }}
-                      >
-                        <option value="Requested">Requested</option>
-                        <option value="Confirmed">Confirmed</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Out for Delivery">Out for Delivery</option>
-                        <option value="Completed">Completed</option>
-                        <option value="Cancelled">Cancelled</option>
-                      </select>
-                    </td>
-                  </tr>
-                ))}
+                {filteredLeads.map(rawLead => {
+                  const lead = parseLeadData(rawLead);
+                  return (
+                    <tr key={lead.id} className={lead.status === 'Completed' ? 'row-completed' : ''}>
+                      <td>#{lead.id}</td>
+                      <td style={{ fontWeight: '600' }}>{lead.name}</td>
+                      <td>
+                        <div>{lead.mobile_number}</div>
+                        <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{lead.email}</div>
+                      </td>
+                      <td>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                          <span className="badge">{lead.product_interest}</span>
+                          <div style={{ fontSize: '0.85rem', fontWeight: 'bold', color: 'var(--primary)' }}>Qty: {lead.required_quantity || 'N/A'}</div>
+                        </div>
+                      </td>
+                      <td>
+                        <div style={{ fontSize: '0.85rem' }}>{lead.delivery_location || 'N/A'}</div>
+                        <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>Next: {lead.upcoming_load || 'None'}</div>
+                      </td>
+                      <td><div style={{ fontSize: '0.85rem' }}>{new Date(lead.timestamp).toLocaleDateString()}</div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(lead.timestamp).toLocaleTimeString()}</div></td>
+                      <td>
+                        <select 
+                          value={lead.status || 'Requested'} 
+                          onChange={(e) => changeStatus(lead.id, e.target.value)}
+                          style={{
+                            background: 'rgba(61, 82, 160, 0.4)',
+                            color: '#EDE8F5',
+                            border: '1px solid var(--border-color)',
+                            padding: '0.4rem',
+                            borderRadius: '4px',
+                            outline: 'none'
+                          }}
+                        >
+                          <option value="Requested">Requested</option>
+                          <option value="Confirmed">Confirmed</option>
+                          <option value="Processing">Processing</option>
+                          <option value="Out for Delivery">Out for Delivery</option>
+                          <option value="Completed">Completed</option>
+                          <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </td>
+                    </tr>
+                  );
+                })}
                 {filteredLeads.length === 0 && (
                   <tr>
                     <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No orders found.</td>
