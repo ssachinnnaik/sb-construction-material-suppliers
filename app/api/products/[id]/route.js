@@ -52,6 +52,7 @@ export async function PUT(req, { params }) {
     const desc = formData.get('desc');
     const price = formData.get('price');
     const file = formData.get('image');
+    const newId = formData.get('id');
 
     if (!name || !desc) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -62,6 +63,11 @@ export async function PUT(req, { params }) {
       desc,
       price
     };
+    
+    // Check if ID is changing
+    if (newId && newId !== id) {
+      updateData.id = newId;
+    }
 
     if (file && typeof file.arrayBuffer === 'function') {
       // First, get old image to delete it to save space

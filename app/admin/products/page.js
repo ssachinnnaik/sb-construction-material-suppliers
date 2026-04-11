@@ -146,8 +146,9 @@ export default function AdminProducts() {
             </h3>
             <form onSubmit={handleAddProduct} className="lead-form">
               <div className="form-group">
-                <label>Product ID (Lowercase, no spaces)</label>
-                <input type="text" placeholder="e.g. premium-cement" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value.toLowerCase().replace(/ /g, '-')})} disabled={isEditing} style={isEditing ? { opacity: 0.6 } : {}} />
+                <label>Product ID (Unique, lowercase, no spaces)</label>
+                <input type="text" placeholder="e.g. premium-cement" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value.toLowerCase().replace(/ /g, '-')})} style={isEditing ? { border: '1px solid var(--primary)' } : {}} />
+                {isEditing && <p style={{ fontSize: '0.7rem', color: 'var(--warning)', marginTop: '0.3rem' }}>⚠️ Changing the ID will update the product's unique identifier.</p>}
               </div>
               <div className="form-group">
                 <label>Display Name</label>
