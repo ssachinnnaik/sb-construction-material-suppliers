@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PackageOpen, Trash2, PlusCircle, ArrowLeft } from 'lucide-react';
+import { PackageOpen, Trash2, Edit2, PlusCircle, ArrowLeft, X } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -14,9 +14,11 @@ export default function AdminProducts() {
     name: '',
     desc: '',
     price: '',
+    price: '',
     image: null
   });
   
+  const [isEditing, setIsEditing] = useState(false);
   const [submitState, setSubmitState] = useState({ loading: false, error: '', success: '' });
 
   const fetchProducts = async () => {
@@ -45,8 +47,14 @@ export default function AdminProducts() {
     e.preventDefault();
     setSubmitState({ loading: true, error: '', success: '' });
 
-    if (!formData.id || !formData.name || !formData.desc || !formData.image) {
+    if (!formData.id || !formData.name || !formData.desc) {
       setSubmitState({ loading: false, error: 'Please fill all required fields.', success: '' });
+      return;
+    }
+    
+    // Require image only if creating a new product
+    if (!isEditing && !formData.image) {
+      setSubmitState({ loading: false, error: 'Product image is required for new products.', success: '' });
       return;
     }
 
@@ -58,14 +66,17 @@ export default function AdminProducts() {
     payload.append('image', formData.image);
 
     try {
-      const res = await fetch('/api/products', {
-        method: 'POST',
+      const url = isEditing ? `/api/products/${formData.id}` : '/api/products';
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const res = await fetch(url, {
+        method: method,
         body: payload
       });
 
       if (res.ok) {
-        setSubmitState({ loading: false, error: '', success: 'Product added securely!' });
-        setFormData({ id: '', name: '', desc: '', price: '', image: null });
+        setSubmitState({ loading: false, error: '', success: isEditing ? 'Product updated securely!' : 'Product added securely!' });
+        setTimeout(() => { cancelEdit(); }, 2000);
         fetchProducts(); // refresh table
       } else {
         const data = await res.json();
@@ -86,6 +97,25 @@ export default function AdminProducts() {
     }
   };
 
+  const handleEdit = (product) => {
+    setFormData({
+      id: product.id,
+      name: product.name,
+      desc: product.desc,
+      price: product.price,
+      image: null
+    });
+    setIsEditing(true);
+    setSubmitState({ loading: false, error: '', success: '' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const cancelEdit = () => {
+    setFormData({ id: '', name: '', desc: '', price: '', image: null });
+    setIsEditing(false);
+    setSubmitState({ loading: false, error: '', success: '' });
+  };
+
   return (
     <main className="main-content" style={{ minHeight: '100vh', padding: '2rem' }}>
       <div className="container">
@@ -100,17 +130,25 @@ export default function AdminProducts() {
           <PackageOpen size={48} className="text-primary" />
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '2rem' }}>
+        <div className="admin-grid">
           
           {/* Add Form */}
           <div className="about-card" style={{ textAlign: 'left' }}>
-            <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <PlusCircle className="text-primary"/> Add New Product
+            <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                {isEditing ? <Edit2 className="text-primary"/> : <PlusCircle className="text-primary"/>} 
+                {isEditing ? 'Edit Product' : 'Add New Product'}
+              </span>
+              {isEditing && (
+                <button type="button" onClick={cancelEdit} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)' }}>
+                  <X size={20} />
+                </button>
+              )}
             </h3>
             <form onSubmit={handleAddProduct} className="lead-form">
               <div className="form-group">
                 <label>Product ID (Lowercase, no spaces)</label>
-                <input type="text" placeholder="e.g. premium-cement" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value.toLowerCase().replace(/ /g, '-')})} />
+                <input type="text" placeholder="e.g. premium-cement" value={formData.id} onChange={e => setFormData({...formData, id: e.target.value.toLowerCase().replace(/ /g, '-')})} disabled={isEditing} style={isEditing ? { opacity: 0.6 } : {}} />
               </div>
               <div className="form-group">
                 <label>Display Name</label>
@@ -125,7 +163,7 @@ export default function AdminProducts() {
                 <input type="text" placeholder="Strong setting cement for core structure." value={formData.desc} onChange={e => setFormData({...formData, desc: e.target.value})} />
               </div>
               <div className="form-group">
-                <label>Product Image</label>
+                <label>{isEditing ? 'Upload New Image (Optional)' : 'Product Image'}</label>
                 <input type="file" accept="image/*" onChange={handleFileChange} style={{ background: 'transparent', border: 'none', padding: '0' }} />
               </div>
               
@@ -133,7 +171,7 @@ export default function AdminProducts() {
               {submitState.success && <p className="success-msg"><strong style={{color: 'var(--success)'}}>{submitState.success}</strong></p>}
               
               <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
-                {submitState.loading ? 'Uploading...' : 'Publish Product'}
+                {submitState.loading ? 'Processing...' : (isEditing ? 'Save Changes' : 'Publish Product')}
               </button>
             </form>
           </div>
@@ -160,9 +198,14 @@ export default function AdminProducts() {
                       <td style={{ padding: '1rem 0.5rem', fontWeight: 'bold' }}>{p.name}</td>
                       <td style={{ padding: '1rem 0.5rem', color: 'var(--text-muted)' }}>{p.price || 'N/A'}</td>
                       <td style={{ padding: '1rem 0.5rem' }}>
-                        <button onClick={() => handleDelete(p.id)} style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer' }}>
-                          <Trash2 size={20} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.8rem' }}>
+                          <button onClick={() => handleEdit(p)} style={{ background: 'transparent', border: 'none', color: 'var(--primary)', cursor: 'pointer' }} title="Edit Product">
+                            <Edit2 size={20} />
+                          </button>
+                          <button onClick={() => handleDelete(p.id)} style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer' }} title="Delete Product">
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

@@ -2,12 +2,6 @@ import { NextResponse } from 'next/server';
 import supabase from '@/lib/db';
 import path from 'path';
 
-// Handle Next.js body parser limits if needed (optional)
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
 
 export async function GET() {
   try {

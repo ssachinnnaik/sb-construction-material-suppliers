@@ -40,36 +40,29 @@ export async function POST(request) {
 
     // Send Email Notifications
     try {
-      if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-          },
-        });
+      if (process.env.RESEND_API_KEY) {
+        const { Resend } = require('resend');
+        const resend = new Resend(process.env.RESEND_API_KEY);
 
         // 1. Admin Alert
-        const adminMailOptions = {
-          from: process.env.EMAIL_USER,
-          to: 'sbmcontact5886@gmail.com',
+        await resend.emails.send({
+          from: 'SB Construction <onboarding@resend.dev>',
+          to: ['sachinnaik.juo@gmail.com'], // using registered email
           subject: `New Order Requested: ${name} - SB Construction`,
           text: `You have received a new order request!\n\nName: ${name}\nMobile Number: ${mobile_number}\nEmail: ${email}\nProduct Interest: ${product_interest || 'General'}\n\nPlease check your admin dashboard to process this order.`,
-        };
-        await transporter.sendMail(adminMailOptions);
+        });
 
         // 2. Customer Welcome & Confirmation Email
-        const customerMailOptions = {
-          from: process.env.EMAIL_USER,
-          to: email,
+        await resend.emails.send({
+          from: 'SB Construction <onboarding@resend.dev>',
+          to: [email],
           subject: `Order Received: Welcome to SB Construction!`,
           text: `Dear ${name},\n\nGreetings from SB Construction!\n\nWe have successfully received your verification and registered your profile. \n\nThank you for choosing us for your construction material needs. Transparency and Quality are our top priorities.\n\n=== YOUR BOOKING DETAILS ===\nProduct Requested: ${product_interest || 'General Enquiry'}\nMobile Linked: ${mobile_number}\n\nOur administrative team has been notified and we will contact you shortly to confirm the exact delivery details and transport dispatch.\n\n=== CONTACT US ===\nIf you have any urgent queries regarding this booking, please reach out to us at:\nPhone: +91 9490 057 579\nEmail: sbmcontact5886@gmail.com\n\nThanks & Regards,\nSB Construction Team`,
-        };
-        await transporter.sendMail(customerMailOptions);
+        });
         
-        console.log(`Emails successfully sent for lead ${name}`);
+        console.log(`Emails successfully sent for lead ${name} via Resend.`);
       } else {
-        console.warn('Email credentials not set in .env.local; skipping email notifications.');
+        console.warn('Resend API key not set in .env.local; skipping email notifications.');
       }
     } catch (emailError) {
       console.error('Failed to send email notifications:', emailError);

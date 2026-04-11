@@ -64,8 +64,8 @@ export default function AdminPage() {
   return (
     <div className="admin-container">
       <header className="admin-header">
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2>Order Management Dashboard</h2>
+        <div className="container admin-header-flex">
+          <h2 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Order Dashboard</h2>
           <div className="admin-actions">
             <button className="btn-secondary" onClick={fetchLeads}><RefreshCw size={16} /> Refresh</button>
             <button className="btn-primary" onClick={exportCSV}><Download size={16} /> Export CSV</button>
@@ -74,8 +74,8 @@ export default function AdminPage() {
       </header>
 
       <main className="container" style={{ padding: '2rem 1.5rem' }}>
-        <div className="search-bar" style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem', background: 'var(--bg-card)', padding: '1rem', borderRadius: '8px' }}>
-          <Search className="text-muted" />
+        <div className="search-bar" style={{ marginBottom: '2rem', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '1rem', background: 'var(--bg-card)', padding: '1rem', borderRadius: '8px' }}>
+          <Search className="text-muted" style={{ minWidth: '24px' }} />
           <input 
             type="text" 
             placeholder="Search by name, email, or mobile..." 
