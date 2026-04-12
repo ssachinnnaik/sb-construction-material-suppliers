@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X } from 'lucide-react';
+import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X, Mail, MapPin, Package } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -13,6 +13,7 @@ export default function Home() {
   const [orderDetails, setOrderDetails] = useState({ quantity: '', location: '', upcoming: '' });
   
   const [emailOtp, setEmailOtp] = useState('');
+  const [sandboxOtp, setSandboxOtp] = useState(null);
   const [submitState, setSubmitState] = useState({ loading: false, success: false, error: '' });
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function Home() {
     setModalOpen(true);
     setModalStage('CONTACT');
     setEmailOtp('');
+    setSandboxOtp(null);
     setOrderDetails({ quantity: '', location: '', upcoming: '' });
     setSubmitState({ loading: false, success: false, error: '' });
   };
@@ -44,7 +46,6 @@ export default function Home() {
     }
 
     try {
-      // 1. Send Email OTP via Backend
       const emailRes = await fetch('/api/otp/send', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +54,11 @@ export default function Home() {
       const emailData = await emailRes.json();
       
       if (!emailRes.ok) {
-        throw new Error(emailData.error || 'Failed to send Email OTP');
+        throw new Error(emailData.error || 'Failed to send OTP');
+      }
+
+      if (emailData.sandbox_otp) {
+        setSandboxOtp(emailData.sandbox_otp);
       }
 
       setModalStage('OTP');
@@ -69,20 +74,18 @@ export default function Home() {
     e.preventDefault();
     setSubmitState({ loading: true, success: false, error: '' });
 
-    if (!emailOtp) {
-      return setSubmitState({ loading: false, success: false, error: 'Email OTP is required.' });
-    }
+    const codeToVerify = emailOtp || '';
 
     try {
       const verifyRes = await fetch('/api/otp/verify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, otp_code: emailOtp })
+        body: JSON.stringify({ email: formData.email, otp_code: codeToVerify })
       });
       
       if (!verifyRes.ok) {
         const vData = await verifyRes.json();
-        throw new Error(vData.error || 'Invalid Email OTP');
+        throw new Error(vData.error || 'Invalid OTP');
       }
 
       setModalStage('DETAILS');
@@ -119,7 +122,7 @@ export default function Home() {
         setTimeout(() => closeModal(), 3000);
       } else {
         const lData = await leadRes.json();
-        throw new Error(lData.error || 'Order submission failed.');
+        throw new Error(lData.error || 'Submission failed.');
       }
     } catch (err) {
       console.error(err);
@@ -131,102 +134,102 @@ export default function Home() {
     <main className="main-content">
       {/* Hero Section */}
       <section className="hero">
-        <div className="container hero-content">
-          <h1 className="hero-title">
-            <span className="text-primary">SB</span> CONSTRUCTION <br/> MATERIALS SUPPLIERS
+        <div className="container hero-content text-center">
+          <h1 className="hero-title animate-fade-in">
+            Premium Construction <br/>
+            <span className="text-primary italic">Material Suppliers</span>
           </h1>
-          <p className="hero-tagline">Trusted Construction Material Suppliers in Hyderabad</p>
+          <p className="hero-tagline">Hyderabad's Most Trusted Direct Source</p>
           <p className="hero-desc">
-            Direct supply using our own lorries. Zero middlemen. Uncompromised honesty and premium quality for your build.
+            We source directly from premium quarries and factories using our own fleet. 
+            Zero middlemen. 100% transparency. Uncompromised honesty for your build.
           </p>
           <div className="hero-actions">
-            <button className="btn-primary" onClick={() => window.scrollTo({ top: document.getElementById('products').offsetTop, behavior: 'smooth' })}>
-              Explore Products
+            <button className="btn-primary" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
+              View Catalog
             </button>
-            <button className="btn-secondary" onClick={() => openModal('General Inquiry')}>
-              Get Quote Now
+            <button className="btn-secondary" onClick={() => openModal('Instant Quote')}>
+              Instant Quote
             </button>
           </div>
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="about section-padding" id="about">
+      {/* Trust Blocks */}
+      <section className="section-padding">
         <div className="container">
-          <h2 className="section-title">About Us</h2>
           <div className="about-grid">
-            <div className="about-card">
-              <Truck size={40} className="text-primary mb-4" />
-              <h3>Direct Transport</h3>
-              <p>We own our lorry fleet. This means no delay, right-on-time delivery, and reduced costs passed entirely to you.</p>
+            <div className="glass-card text-center">
+              <div className="mb-4 inline-block p-4 rounded-2xl bg-primary/10">
+                <Truck size={32} className="text-primary" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Direct Fleet</h3>
+              <p className="text-muted">No external transporters. Our own lorries ensure on-time delivery without hidden costs.</p>
             </div>
-            <div className="about-card">
-              <ShieldCheck size={40} className="text-primary mb-4" />
-              <h3>Premium Quality</h3>
-              <p>Sourcing directly from top sites including premium Karimnagar red bricks and high-grade river sand.</p>
+            <div className="glass-card text-center">
+              <div className="mb-4 inline-block p-4 rounded-2xl bg-success/10">
+                <ShieldCheck size={32} className="text-success" />
+              </div>
+              <h3 className="text-xl font-bold mb-3">Verified Quality</h3>
+              <p className="text-muted">Every brick and load of sand is manually inspected before it leaves our source sites.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Awareness Section - Warning User about Market Frauds */}
-      <section className="awareness section-padding">
+      {/* Awareness Redux */}
+      <section className="section-padding">
         <div className="container">
-          <div className="awareness-banner">
-            <AlertTriangle size={60} className="text-danger bounce-anim" />
-            <h2 className="warning-title">Beware of False Promises by Other Suppliers</h2>
+          <div className="awareness-banner text-center">
+            <AlertTriangle size={64} className="text-danger mb-6 bounce-anim mx-auto" />
+            <h2 className="section-title mb-2">Market Alert</h2>
+            <p className="text-muted mb-12">Don't be a victim of construction material scams in Hyderabad.</p>
             
             <div className="warning-grid">
               <div className="warning-card">
-                <h4>🔴 Fake Low Pricing Traps</h4>
-                <p>Suppliers tempt you with extremely low rates upfront, only to compensate by cutting product quantity or quality covertly.</p>
+                <h4 className="font-bold text-lg mb-2 text-danger">The "Short Load" Trick</h4>
+                <p className="text-muted text-sm">Suppliers often skip layers of bricks or underfill sand volumes to compensate for fake low prices.</p>
               </div>
               <div className="warning-card">
-                <h4>🔴 The Hidden "Brick Deduction" Fraud</h4>
-                <p>A widely used trick: Removing every 100th brick during loading or unloading. You lose money without even noticing!</p>
+                <h4 className="font-bold text-lg mb-2 text-danger">Distraction Unloading</h4>
+                <p className="text-muted text-sm">Agents distract you during count to hide product shortages. We encourage manual verification.</p>
               </div>
               <div className="warning-card">
-                <h4>🔴 Distraction Tactics</h4>
-                <p>Delivery agents often distract site supervisors while unloading, tampering with the actual counted volume of sand or bricks.</p>
+                <h4 className="font-bold text-lg mb-2 text-danger">Hidden Fees</h4>
+                <p className="text-muted text-sm">Unexpected "transport spikes" added last minute. With us, your quote is final and inclusive.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="why-us section-padding">
+      {/* Products Catalog */}
+      <section className="section-padding" id="products">
         <div className="container">
-          <h2 className="section-title">Why Choose SB Construction?</h2>
-          <ul className="trust-list">
-            <li><ShieldCheck className="text-success" /> 100% Transparency in pricing and volume.</li>
-            <li><ShieldCheck className="text-success" /> Honest, manual verification counting system.</li>
-            <li><ShieldCheck className="text-success" /> No hidden tricks, no sudden extra transport fees.</li>
-            <li><ShieldCheck className="text-success" /> Customer-first service focused on building long-term trust.</li>
-            <li><ShieldCheck className="text-success" /> Highly trusted supplier across all of Hyderabad and nearby areas.</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Products Section */}
-      <section className="products section-padding" id="products">
-        <div className="container">
-          <h2 className="section-title">Our Products</h2>
+          <h2 className="section-title">Our Materials</h2>
           <div className="product-grid">
-            {products.length === 0 ? <p className="text-center w-full mt-4">Loading catalog...</p> : null}
             {products.map(product => (
-              <div key={product.id} className="product-card">
-                <div className="product-img-wrapper" style={{ overflow: 'hidden' }}>
-                  <Image src={product.img_path || '/sand-coarse.png'} alt={product.name} width={400} height={200} style={{ objectFit: 'cover', width: '100%', height: '200px', display: 'block' }} unoptimized />
+              <div key={product.id} className="product-card group">
+                <div className="product-img-wrapper">
+                  <Image 
+                    src={product.img_path || '/sand-coarse.png'} 
+                    alt={product.name} 
+                    fill 
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
                 </div>
                 <div className="product-info">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <h3 style={{ width: '70%' }}>{product.name}</h3>
-                    {product.price && <span style={{ background: '#D0EDDA', color: '#1a1a1a', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>{product.price}</span>}
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-xl font-bold">{product.name}</h3>
+                    <span className="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-bold border border-success/30">
+                      {product.price}
+                    </span>
                   </div>
-                  <p>{product.desc}</p>
-                  <button className="btn-outline-primary mt-4" onClick={() => openModal(product.name)}>
-                    Get Details <ChevronRight size={16} />
+                  <p className="text-muted text-sm mb-6 leading-relaxed">{product.desc}</p>
+                  <button className="btn-primary w-full" onClick={() => openModal(product.name)}>
+                    Get Quote <ChevronRight size={16} />
                   </button>
                 </div>
               </div>
@@ -235,138 +238,80 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Floating Action Buttons */}
-      <div className="floating-actions">
-        <a href="https://wa.me/919490057579" target="_blank" rel="noreferrer" className="fab fab-whatsapp">
-          <MessageCircle />
-        </a>
-        <a href="tel:+919490057579" className="fab fab-call">
-          <Phone />
-        </a>
-      </div>
-
-      {/* Lead Capture Modal */}
+      {/* Verification Modal */}
       {modalOpen && (
         <div className="modal-overlay">
-          <div className="modal-content">
-            <button className="modal-close" onClick={closeModal}><X /></button>
-            <h3 className="modal-title">Get a Free Quote</h3>
-            <p className="modal-subtitle">Interested in <strong>{selectedProduct}</strong>? Leave your details below and we will contact you immediately.</p>
+          <div className="modal-content animate-fade-in">
+            <button className="absolute top-6 right-6 text-muted hover:text-white" onClick={closeModal}><X /></button>
+            <h3 className="text-2xl font-bold mb-2">Request Quote</h3>
+            <p className="text-muted text-sm mb-8">For <strong>{selectedProduct}</strong></p>
             
             {submitState.success ? (
-              <div className="success-msg">
-                <ShieldCheck size={48} className="text-success mx-auto" />
-                <p>Verification Success! Our team has been notified and will contact you shortly.</p>
+              <div className="text-center py-8">
+                <div className="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-success/30">
+                  <ShieldCheck size={40} className="text-success" />
+                </div>
+                <h4 className="text-xl font-bold mb-2">Verified!</h4>
+                <p className="text-muted">Our fleet manager will contact you shortly with the best pricing.</p>
               </div>
             ) : (
-              <div className="lead-modal-stages">
+              <div>
                 {modalStage === 'CONTACT' && (
-                  <form onSubmit={handleSendOTP} className="lead-form">
+                  <form onSubmit={handleSendOTP} className="space-y-4">
                     <div className="form-group">
-                      <label>Name</label>
-                      <input 
-                        type="text" 
-                        placeholder="Enter your name" 
-                        value={formData.name} 
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <label>Full Name</label>
+                      <input type="text" placeholder="Your Name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                     </div>
-                    <div className="form-group">
-                      <label>Mobile Number</label>
-                      <input 
-                        type="tel" 
-                        placeholder="Enter 10-digit mobile number" 
-                        value={formData.mobile} 
-                        onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                        maxLength={10}
-                        disabled={submitState.loading}
-                        required
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="form-group">
+                        <label>Mobile</label>
+                        <input type="tel" placeholder="10 Digits" value={formData.mobile} onChange={e => setFormData({ ...formData, mobile: e.target.value })} maxLength={10} required />
+                      </div>
+                      <div className="form-group">
+                        <label>Email</label>
+                        <input type="email" placeholder="OTP will be sent here" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
+                      </div>
                     </div>
-                    <div className="form-group">
-                      <label>Email Address</label>
-                      <input 
-                        type="email" 
-                        placeholder="Enter email to receive OTP" 
-                        value={formData.email} 
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
-                    </div>
-                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
-                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? 'Processing...' : 'Send Verification OTP to Email'}
+                    {submitState.error && <p className="text-danger text-sm">{submitState.error}</p>}
+                    <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
+                      {submitState.loading ? 'Sending OTP...' : 'Send Verification OTP'}
                     </button>
                   </form>
                 )}
 
                 {modalStage === 'OTP' && (
-                  <form onSubmit={handleVerifyOTP} className="lead-form">
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
-                      Security check: We just sent a 6-Digit code to <strong>{formData.email}</strong>. Please enter it below.
-                    </p>
-                    <div className="form-group">
-                      <label>Email OTP (Check Inbox!)</label>
-                      <input 
-                        type="text" 
-                        placeholder="Enter 6-Digit Email Code" 
-                        value={emailOtp} 
-                        onChange={e => setEmailOtp(e.target.value)}
-                        maxLength={6}
-                        disabled={submitState.loading}
-                        required
-                      />
+                  <form onSubmit={handleVerifyOTP} className="space-y-6">
+                    <div className="p-4 bg-primary/10 rounded-xl border border-primary/20">
+                      <p className="text-sm text-primary mb-2">We sent a verification code to {formData.email}</p>
+                      {sandboxOtp && (
+                        <p className="text-xs font-mono bg-white/10 p-2 rounded border border-white/20 mt-2">
+                          [TESTING CODE]: <span className="text-white font-bold">{sandboxOtp}</span>
+                        </p>
+                      )}
                     </div>
-                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
-                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? 'Verifying...' : 'Verify OTP'}
+                    <div className="form-group">
+                      <label>6-Digit Code</label>
+                      <input type="text" placeholder="Enter Code" value={emailOtp} onChange={e => setEmailOtp(e.target.value)} maxLength={6} required />
+                    </div>
+                    <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
+                      {submitState.loading ? 'Verifying...' : 'Verify & Proceed'}
                     </button>
+                    <p className="text-center text-xs text-muted">Didn't get it? Check your spam folder.</p>
                   </form>
                 )}
 
                 {modalStage === 'DETAILS' && (
-                  <form onSubmit={handleSubmitFinal} className="lead-form">
-                    <p style={{ fontSize: '0.85rem', color: 'var(--primary)', marginBottom: '1.5rem', fontWeight: '600' }}>
-                      ✅ Email Verified! Please provide your order details to proceed.
-                    </p>
+                  <form onSubmit={handleSubmitFinal} className="space-y-4">
                     <div className="form-group">
-                      <label>Actual Quantity Needed</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. 5 Loads / 3000 Bricks" 
-                        value={orderDetails.quantity} 
-                        onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <label>Quantity Needed</label>
+                      <input type="text" placeholder="e.g. 5 Loads / 5000 Bricks" value={orderDetails.quantity} onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })} required />
                     </div>
                     <div className="form-group">
-                      <label>Delivery Site Location</label>
-                      <input 
-                        type="text" 
-                        placeholder="Full address or landmark" 
-                        value={orderDetails.location} 
-                        onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <label>Delivery Landmark</label>
+                      <input type="text" placeholder="Full address" value={orderDetails.location} onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })} required />
                     </div>
-                    <div className="form-group">
-                      <label>Upcoming Load Quantity (Optional)</label>
-                      <input 
-                        type="text" 
-                        placeholder="Any future requirements?" 
-                        value={orderDetails.upcoming} 
-                        onChange={e => setOrderDetails({ ...orderDetails, upcoming: e.target.value })}
-                        disabled={submitState.loading}
-                      />
-                    </div>
-                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
-                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? 'Submitting...' : 'Confirm & Submit Order'}
+                    <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
+                      Submit Quote Request
                     </button>
                   </form>
                 )}
@@ -376,15 +321,34 @@ export default function Home() {
         </div>
       )}
 
-      {/* Footer */}
-      <footer className="footer section-padding">
-        <div className="container text-center">
-          <p style={{ marginBottom: '0.5rem', fontSize: '1.1rem' }}>
-            <strong>Contact Us:</strong> <br/>
-            Email: <a href="mailto:sbmcontsct5886@gmail.com" style={{ textDecoration: 'underline' }}>sbmcontsct5886@gmail.com</a> | 
-            Phone: <a href="tel:+919490057579" style={{ textDecoration: 'underline' }}>+91 9490 057 579</a>
-          </p>
-          <p style={{ marginTop: '2rem' }}>&copy; {new Date().getFullYear()} SB Construction Materials Suppliers. Serving Hyderabad.</p>
+      {/* Floating Actions */}
+      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-50">
+        <a href="https://wa.me/919490057579" target="_blank" rel="noreferrer" className="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+          <MessageCircle className="text-white" />
+        </a>
+        <a href="tel:+919490057579" className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+          <Phone className="text-white" />
+        </a>
+      </div>
+
+      <footer className="footer py-20 bg-slate-950 border-t border-white/5">
+        <div className="container grid md:grid-cols-3 gap-12 text-sm">
+          <div>
+            <h4 className="text-white font-bold text-lg mb-6">SB Construction</h4>
+            <p className="text-muted leading-relaxed">Providing high-quality construction materials directly to your site with 100% honesty.</p>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-6">Contact Details</h4>
+            <div className="space-y-4">
+              <p className="flex items-center gap-3"><Mail size={16} /> sbmcontsct5886@gmail.com</p>
+              <p className="flex items-center gap-3"><Phone size={16} /> +91 9490 057 579</p>
+              <p className="flex items-center gap-3"><MapPin size={16} /> Hyderabad, Telangana</p>
+            </div>
+          </div>
+          <div>
+            <h4 className="text-white font-bold mb-6">Transparency</h4>
+            <p className="text-muted italic">"We don't count by guess, we count by honesty."</p>
+          </div>
         </div>
       </footer>
     </main>

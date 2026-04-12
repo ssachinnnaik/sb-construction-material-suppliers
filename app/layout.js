@@ -1,25 +1,38 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata = {
-  title: "SB Construction Materials Suppliers | Hyderabad",
-  description: "Trusted Construction Material Suppliers in Hyderabad. Coarse sand, fine sand, and premium Karimnagar bricks direct to your site.",
+  title: "SB Construction | Premium Material Suppliers Hyderabad",
+  description: "Hyderabad's most trusted construction material suppliers. Direct supply of premium Karimnagar bricks, sand, and stone with 100% transparency and honesty.",
+  keywords: ["construction materials Hyderabad", "Karimnagar bricks Hyderabad", "sand suppliers Hyderabad", "SB Construction Hyderabad", "building materials"],
+  authors: [{ name: "SB Construction Team" }],
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
+      <body style={{ fontFamily: 'var(--font-outfit), var(--font-inter), sans-serif' }}>
+        {children}
+      </body>
     </html>
   );
 }
