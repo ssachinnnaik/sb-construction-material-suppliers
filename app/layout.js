@@ -1,5 +1,7 @@
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
+import CustomCursor from "@/components/CustomCursor";
+import UniqueLoader from "@/components/UniqueLoader";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -31,6 +33,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
       <body style={{ fontFamily: 'var(--font-outfit), var(--font-inter), sans-serif' }}>
+        <UniqueLoader />
+        <CustomCursor />
         {children}
       </body>
     </html>

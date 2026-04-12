@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X, Mail, MapPin, Package } from 'lucide-react';
+import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X, Mail, MapPin, Package, Cpu, Layers } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -135,101 +135,108 @@ export default function Home() {
       {/* Hero Section */}
       <section className="hero">
         <div className="container hero-content text-center">
-          <h1 className="hero-title animate-fade-in">
-            Premium Construction <br/>
-            <span className="text-primary italic">Material Suppliers</span>
+          <span className="hero-tagline animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            System Integrity Verified
+          </span>
+          <h1 className="hero-title animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            Next-Gen <br/>
+            Structural <span className="text-primary">Suppliers</span>
           </h1>
-          <p className="hero-tagline">Hyderabad's Most Trusted Direct Source</p>
-          <p className="hero-desc">
-            We source directly from premium quarries and factories using our own fleet. 
-            Zero middlemen. 100% transparency. Uncompromised honesty for your build.
+          <p className="hero-desc animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            Direct sourcing from digital-grade quarries. Optimized fleet logistics. 
+            Zero redundancy. 100% architectural transparency.
           </p>
-          <div className="hero-actions">
+          <div className="hero-actions animate-fade-in" style={{ animationDelay: '0.8s' }}>
             <button className="btn-primary" onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}>
-              View Catalog
+              Launch Catalog
             </button>
             <button className="btn-secondary" onClick={() => openModal('Instant Quote')}>
-              Instant Quote
+              Request Analytics
             </button>
           </div>
         </div>
       </section>
 
-      {/* Trust Blocks */}
+      {/* Structural Stats / Trust Blocks */}
       <section className="section-padding">
         <div className="container">
           <div className="about-grid">
-            <div className="glass-card text-center">
-              <div className="mb-4 inline-block p-4 rounded-2xl bg-primary/10">
-                <Truck size={32} className="text-primary" />
+            <div className="glass-card animate-fade-in" style={{ animationDelay: '0.2s' }}>
+              <div className="mb-8 inline-block p-4 bg-primary/10 border border-primary/20">
+                <Cpu size={32} className="text-primary" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Direct Fleet</h3>
-              <p className="text-muted">No external transporters. Our own lorries ensure on-time delivery without hidden costs.</p>
+              <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">Automated Logistics</h3>
+              <p className="text-muted leading-relaxed">Direct telemetry from our dedicated lorry fleet ensures real-time delivery precision without intermediaries.</p>
             </div>
-            <div className="glass-card text-center">
-              <div className="mb-4 inline-block p-4 rounded-2xl bg-success/10">
-                <ShieldCheck size={32} className="text-success" />
+            <div className="glass-card animate-fade-in" style={{ animationDelay: '0.4s' }}>
+              <div className="mb-8 inline-block p-4 bg-success/10 border border-success/20">
+                <Layers size={32} className="text-success" />
               </div>
-              <h3 className="text-xl font-bold mb-3">Verified Quality</h3>
-              <p className="text-muted">Every brick and load of sand is manually inspected before it leaves our source sites.</p>
+              <h3 className="text-2xl font-black mb-4 uppercase tracking-tighter">Verified Materials</h3>
+              <p className="text-muted leading-relaxed">Every structural unit is cross-verified for volume and density before dispatching to your coordinate.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Awareness Redux */}
+      {/* Security Alert / Market Awareness */}
       <section className="section-padding">
         <div className="container">
-          <div className="awareness-banner text-center">
-            <AlertTriangle size={64} className="text-danger mb-6 bounce-anim mx-auto" />
-            <h2 className="section-title mb-2">Market Alert</h2>
-            <p className="text-muted mb-12">Don't be a victim of construction material scams in Hyderabad.</p>
-            
-            <div className="warning-grid">
-              <div className="warning-card">
-                <h4 className="font-bold text-lg mb-2 text-danger">The "Short Load" Trick</h4>
-                <p className="text-muted text-sm">Suppliers often skip layers of bricks or underfill sand volumes to compensate for fake low prices.</p>
+          <div className="awareness-banner">
+            <div className="flex flex-col md:flex-row items-center gap-12">
+              <div className="shrink-0">
+                <AlertTriangle size={80} className="text-danger animate-pulse" />
               </div>
-              <div className="warning-card">
-                <h4 className="font-bold text-lg mb-2 text-danger">Distraction Unloading</h4>
-                <p className="text-muted text-sm">Agents distract you during count to hide product shortages. We encourage manual verification.</p>
-              </div>
-              <div className="warning-card">
-                <h4 className="font-bold text-lg mb-2 text-danger">Hidden Fees</h4>
-                <p className="text-muted text-sm">Unexpected "transport spikes" added last minute. With us, your quote is final and inclusive.</p>
+              <div className="text-left">
+                <h2 className="text-3xl font-black mb-4 uppercase">Market Vulnerability Warning</h2>
+                <p className="text-muted mb-8 max-w-2xl">Traditional supply chains in Hyderabad are prone to structural quantity leakage and distracted unloading frauds.</p>
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="p-6 border-l-2 border-danger bg-danger/5">
+                    <h4 className="font-bold text-danger uppercase mb-2">Volume Truncation</h4>
+                    <p className="text-sm text-muted">Suppliers intentionally under-deliver bricks to inject fake margin into low-cost quotes.</p>
+                  </div>
+                  <div className="p-6 border-l-2 border-danger bg-danger/5">
+                    <h4 className="font-bold text-danger uppercase mb-2">Manual Interception</h4>
+                    <p className="text-sm text-muted">Manual counting distraction is used to hide real-time shortages during unloading phases.</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Products Catalog */}
+      {/* Products Catalog - Maintaining Quality & Size */}
       <section className="section-padding" id="products">
         <div className="container">
-          <h2 className="section-title">Our Materials</h2>
+          <h2 className="section-title">Verified Inventory</h2>
           <div className="product-grid">
-            {products.map(product => (
-              <div key={product.id} className="product-card group">
+            {products.map((product, idx) => (
+              <div key={product.id} className="product-card animate-fade-in" style={{ animationDelay: `${0.1 * idx}s` }}>
                 <div className="product-img-wrapper">
                   <Image 
                     src={product.img_path || '/sand-coarse.png'} 
                     alt={product.name} 
                     fill 
-                    className="object-cover"
+                    style={{ objectFit: 'cover' }}
+                    className="brightness-75"
+                    quality={100} // Ensuring maximum quality
                     unoptimized
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent"></div>
+                  <div className="absolute top-4 left-4 px-2 py-1 bg-primary text-bg-dark text-[10px] font-bold uppercase tracking-widest">
+                    ID: {product.id}
+                  </div>
                 </div>
                 <div className="product-info">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold">{product.name}</h3>
-                    <span className="px-3 py-1 rounded-full bg-success/20 text-success text-xs font-bold border border-success/30">
+                  <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-xl font-black uppercase tracking-tight">{product.name}</h3>
+                    <div className="text-primary font-mono text-sm border-b border-primary/30">
                       {product.price}
-                    </span>
+                    </div>
                   </div>
-                  <p className="text-muted text-sm mb-6 leading-relaxed">{product.desc}</p>
+                  <p className="text-muted text-sm mb-8 leading-relaxed h-12 overflow-hidden">{product.desc}</p>
                   <button className="btn-primary w-full" onClick={() => openModal(product.name)}>
-                    Get Quote <ChevronRight size={16} />
+                    Initiate Quote <ChevronRight size={16} />
                   </button>
                 </div>
               </div>
@@ -238,80 +245,81 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Verification Modal */}
+      {/* Modern Modal */}
       {modalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-content animate-fade-in">
-            <button className="absolute top-6 right-6 text-muted hover:text-white" onClick={closeModal}><X /></button>
-            <h3 className="text-2xl font-bold mb-2">Request Quote</h3>
-            <p className="text-muted text-sm mb-8">For <strong>{selectedProduct}</strong></p>
+        <div className="modal-overlay flex items-center justify-center p-4">
+          <div className="modal-content relative animate-fade-in">
+            <button className="absolute top-8 right-8 text-muted hover:text-primary transition-colors" onClick={closeModal}><X /></button>
+            <h3 className="text-3xl font-black uppercase mb-2 tracking-tighter">System Request</h3>
+            <p className="text-muted text-sm mb-12">Deployment for: <span className="text-primary font-bold">{selectedProduct}</span></p>
             
             {submitState.success ? (
-              <div className="text-center py-8">
-                <div className="w-20 h-20 bg-success/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-success/30">
-                  <ShieldCheck size={40} className="text-success" />
+              <div className="text-center py-12">
+                <div className="w-24 h-24 bg-success/10 border border-success/30 flex items-center justify-center mx-auto mb-8">
+                  <ShieldCheck size={48} className="text-success" />
                 </div>
-                <h4 className="text-xl font-bold mb-2">Verified!</h4>
-                <p className="text-muted">Our fleet manager will contact you shortly with the best pricing.</p>
+                <h4 className="text-2xl font-black uppercase mb-4">Verification Confirmed</h4>
+                <p className="text-muted italic">Our system coordinator has been notified. Standby for contact.</p>
               </div>
             ) : (
-              <div>
+              <div className="animate-fade-in">
                 {modalStage === 'CONTACT' && (
-                  <form onSubmit={handleSendOTP} className="space-y-4">
-                    <div className="form-group">
-                      <label>Full Name</label>
-                      <input type="text" placeholder="Your Name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
+                  <form onSubmit={handleSendOTP} className="space-y-6">
+                    <div className="form-group flex flex-col gap-2">
+                      <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted">Field: Operator Name</label>
+                      <input className="w-full" type="text" placeholder="REQUIRED" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="form-group">
-                        <label>Mobile</label>
-                        <input type="tel" placeholder="10 Digits" value={formData.mobile} onChange={e => setFormData({ ...formData, mobile: e.target.value })} maxLength={10} required />
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div className="form-group flex flex-col gap-2">
+                        <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted">Field: Network Link</label>
+                        <input className="w-full" type="tel" placeholder="10 DIGITS" value={formData.mobile} onChange={e => setFormData({ ...formData, mobile: e.target.value })} maxLength={10} required />
                       </div>
-                      <div className="form-group">
-                        <label>Email</label>
-                        <input type="email" placeholder="OTP will be sent here" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
+                      <div className="form-group flex flex-col gap-2">
+                        <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted">Field: Logic Address</label>
+                        <input className="w-full" type="email" placeholder="ACTIVE EMAIL" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} required />
                       </div>
                     </div>
-                    {submitState.error && <p className="text-danger text-sm">{submitState.error}</p>}
-                    <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
-                      {submitState.loading ? 'Sending OTP...' : 'Send Verification OTP'}
+                    {submitState.error && <p className="text-danger text-xs font-mono">{submitState.error}</p>}
+                    <button type="submit" className="btn-primary w-full mt-4" disabled={submitState.loading}>
+                      {submitState.loading ? 'Transmitting...' : 'Send Access Key'}
                     </button>
                   </form>
                 )}
 
                 {modalStage === 'OTP' && (
-                  <form onSubmit={handleVerifyOTP} className="space-y-6">
-                    <div className="p-4 bg-primary/10 rounded-xl border border-primary/20">
-                      <p className="text-sm text-primary mb-2">We sent a verification code to {formData.email}</p>
+                  <form onSubmit={handleVerifyOTP} className="space-y-8">
+                    <div className="p-6 bg-primary/5 border border-primary/10">
+                      <p className="text-xs text-muted uppercase tracking-widest leading-loose">
+                        A unique access key has been dispatched to <span className="text-primary">{formData.email}</span>.
+                      </p>
                       {sandboxOtp && (
-                        <p className="text-xs font-mono bg-white/10 p-2 rounded border border-white/20 mt-2">
-                          [TESTING CODE]: <span className="text-white font-bold">{sandboxOtp}</span>
+                        <p className="text-[10px] font-mono p-4 bg-white/5 border border-white/10 mt-4">
+                          [MANUAL_BYPASS]: <span className="text-primary font-bold">{sandboxOtp}</span>
                         </p>
                       )}
                     </div>
-                    <div className="form-group">
-                      <label>6-Digit Code</label>
-                      <input type="text" placeholder="Enter Code" value={emailOtp} onChange={e => setEmailOtp(e.target.value)} maxLength={6} required />
+                    <div className="form-group flex flex-col gap-2">
+                      <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted">Input: Access Key</label>
+                      <input className="w-full text-center text-2xl tracking-[0.5em] font-black" type="text" placeholder="******" value={emailOtp} onChange={e => setEmailOtp(e.target.value)} maxLength={6} required />
                     </div>
                     <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
-                      {submitState.loading ? 'Verifying...' : 'Verify & Proceed'}
+                      {submitState.loading ? 'Authenticating...' : 'Validate & Open Link'}
                     </button>
-                    <p className="text-center text-xs text-muted">Didn't get it? Check your spam folder.</p>
                   </form>
                 )}
 
                 {modalStage === 'DETAILS' && (
-                  <form onSubmit={handleSubmitFinal} className="space-y-4">
-                    <div className="form-group">
-                      <label>Quantity Needed</label>
-                      <input type="text" placeholder="e.g. 5 Loads / 5000 Bricks" value={orderDetails.quantity} onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })} required />
+                  <form onSubmit={handleSubmitFinal} className="space-y-6">
+                    <div className="form-group flex flex-col gap-2">
+                      <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted">Input: Volume Load</label>
+                      <input className="w-full" type="text" placeholder="QUANTITY SPECS" value={orderDetails.quantity} onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })} required />
                     </div>
-                    <div className="form-group">
-                      <label>Delivery Landmark</label>
-                      <input type="text" placeholder="Full address" value={orderDetails.location} onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })} required />
+                    <div className="form-group flex flex-col gap-2">
+                      <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-muted">Input: Target Coordinate</label>
+                      <input className="w-full" type="text" placeholder="DELIVERY ADDRESS" value={orderDetails.location} onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })} required />
                     </div>
-                    <button type="submit" className="btn-primary w-full" disabled={submitState.loading}>
-                      Submit Quote Request
+                    <button type="submit" className="btn-primary w-full mt-4" disabled={submitState.loading}>
+                      Finalize Request
                     </button>
                   </form>
                 )}
@@ -322,32 +330,30 @@ export default function Home() {
       )}
 
       {/* Floating Actions */}
-      <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-50">
-        <a href="https://wa.me/919490057579" target="_blank" rel="noreferrer" className="w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+      <div className="fixed bottom-12 right-12 flex flex-col gap-6 z-50">
+        <a href="https://wa.me/919490057579" target="_blank" rel="noreferrer" className="w-16 h-16 bg-[#25D366] rounded-none flex items-center justify-center shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform">
           <MessageCircle className="text-white" />
         </a>
-        <a href="tel:+919490057579" className="w-14 h-14 bg-primary rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-          <Phone className="text-white" />
+        <a href="tel:+919490057579" className="w-16 h-16 bg-primary rounded-none flex items-center justify-center shadow-[0_0_20px_var(--primary-glow)] hover:scale-110 transition-transform">
+          <Phone className="text-bg-dark" />
         </a>
       </div>
 
-      <footer className="footer py-20 bg-slate-950 border-t border-white/5">
-        <div className="container grid md:grid-cols-3 gap-12 text-sm">
+      <footer className="footer py-32 bg-bg-dark border-t border-primary/10">
+        <div className="container grid md:grid-cols-3 gap-24 text-[10px] uppercase tracking-[0.2em]">
           <div>
-            <h4 className="text-white font-bold text-lg mb-6">SB Construction</h4>
-            <p className="text-muted leading-relaxed">Providing high-quality construction materials directly to your site with 100% honesty.</p>
+            <h4 className="text-primary font-black text-xl mb-12 tracking-tighter">SB CONSTRUCTION</h4>
+            <p className="text-muted leading-loose">Structural material engineering and supply. Zero-latency delivery protocols for Hyderabad high-rises.</p>
+          </div>
+          <div className="flex flex-col gap-8">
+            <h4 className="text-white font-bold mb-4">Contact Matrix</h4>
+            <p className="flex items-center gap-4 text-muted"><Mail size={12} className="text-primary" /> sbmcontsct5886@gmail.com</p>
+            <p className="flex items-center gap-4 text-muted"><Phone size={12} className="text-primary" /> +91 9490 057 579</p>
+            <p className="flex items-center gap-4 text-muted"><MapPin size={12} className="text-primary" /> Hyderabad Segment, TS</p>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-6">Contact Details</h4>
-            <div className="space-y-4">
-              <p className="flex items-center gap-3"><Mail size={16} /> sbmcontsct5886@gmail.com</p>
-              <p className="flex items-center gap-3"><Phone size={16} /> +91 9490 057 579</p>
-              <p className="flex items-center gap-3"><MapPin size={16} /> Hyderabad, Telangana</p>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-6">Transparency</h4>
-            <p className="text-muted italic">"We don't count by guess, we count by honesty."</p>
+            <h4 className="text-white font-bold mb-4">Integrity Protocol</h4>
+            <p className="text-muted italic leading-loose border-l border-primary/20 pl-6">"WE DON'T ESTIMATE. WE VERIFY SUCCESS THROUGH STRUCTURAL HONESTY."</p>
           </div>
         </div>
       </footer>
