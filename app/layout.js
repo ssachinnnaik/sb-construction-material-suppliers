@@ -1,7 +1,6 @@
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
-import CustomCursor from "@/components/CustomCursor";
-import UniqueLoader from "@/components/UniqueLoader";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -32,9 +31,8 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
-      <body style={{ fontFamily: 'var(--font-outfit), var(--font-inter), sans-serif' }}>
-        <UniqueLoader />
-        <CustomCursor />
+      <body style={{ fontFamily: 'var(--font-outfit), var(--font-inter), sans-serif', margin: 0 }}>
+        <LoadingSpinner />
         {children}
       </body>
     </html>
