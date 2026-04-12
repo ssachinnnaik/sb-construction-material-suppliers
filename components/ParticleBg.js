@@ -86,33 +86,30 @@ export default function AntigravityBg() {
         const floatX = Math.cos(this.angle) * 0.5;
         const floatY = Math.sin(this.angle) * 0.5;
 
-        // Interaction (Attract to cursor)
+        // Core gravity: Always slowly pull back to the title's gravity area
+        if (this.x !== this.baseX) {
+          this.x += (this.baseX - this.x) / 45;
+        }
+        if (this.y !== this.baseY) {
+          this.y += (this.baseY - this.y) / 45;
+        }
+
+        // Interaction (Disturb with cursor without pulling away completely)
         if (mouse.x !== null && mouse.y !== null) {
           let dx = mouse.x - this.x;
           let dy = mouse.y - this.y;
           let distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < mouse.radius) {
-            // Flow towards and orbit the cursor gently
-            this.x += (dx / distance) * 0.8 * this.density;
-            this.y += (dy / distance) * 0.8 * this.density;
-          } else {
-            // Return to where it belongs smoothly
-            if (this.x !== this.baseX) {
-              this.x += (this.baseX - this.x) / 50;
-            }
-            if (this.y !== this.baseY) {
-              this.y += (this.baseY - this.y) / 50;
-            }
+            // Create a swirling disturbance, NOT direct attraction locking
+            const force = (mouse.radius - distance) / mouse.radius;
+            const forceDirectionX = dx / distance;
+            const forceDirectionY = dy / distance;
+            
+            // Tangential swirl
+            this.x += (forceDirectionY * force * 1.5) * this.density * 0.1;
+            this.y -= (forceDirectionX * force * 1.5) * this.density * 0.1;
           }
-        } else {
-           // No mouse, idle flow at the base
-           if (this.x !== this.baseX) {
-              this.x += (this.baseX - this.x) / 50;
-           }
-           if (this.y !== this.baseY) {
-              this.y += (this.baseY - this.y) / 50;
-           }
         }
         
         this.x += floatX;
