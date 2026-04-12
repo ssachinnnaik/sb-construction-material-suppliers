@@ -148,8 +148,16 @@ export default function AntigravityBg() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0 pointer-events-none"
-      style={{ opacity: 0.7 }}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 0,
+        pointerEvents: 'none',
+        opacity: 0.7
+      }}
     />
   );
 }
