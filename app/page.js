@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import ParticleBg from '@/components/ParticleBg';
+import { auth } from '@/lib/firebase';
+import { RecaptchaVerifier, signInWithPhoneNumber } from 'firebase/auth';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -35,6 +37,17 @@ export default function Home() {
     setModalOpen(false);
   };
 
+  const setupRecaptcha = () => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: (response) => {
+          // reCAPTCHA solved
+        }
+      });
+    }
+  };
+
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setSubmitState({ loading: true, success: false, error: '' });
@@ -47,28 +60,23 @@ export default function Home() {
     }
 
     try {
-      // 1. Send Email OTP via Backend
-      const emailRes = await fetch('/api/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email })
-      });
-      const emailData = await emailRes.json();
+      setupRecaptcha();
+      const appVerifier = window.recaptchaVerifier;
+      const formattedPhone = '+91' + formData.mobile;
       
-      if (!emailRes.ok) {
-        throw new Error(emailData.error || 'Failed to send Email OTP');
-      }
-
-      if (emailData.sandbox_otp) {
-        setSandboxOtp(emailData.sandbox_otp);
-      }
+      const confirmationResult = await signInWithPhoneNumber(auth, formattedPhone, appVerifier);
+      window.confirmationResult = confirmationResult;
 
       setModalStage('OTP');
       setSubmitState({ loading: false, success: false, error: '' });
       
     } catch (err) {
       console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Error communicating with server.' });
+      if (window.recaptchaVerifier) {
+        // Reset recaptcha on failure
+        window.recaptchaVerifier.render().then(widgetId => grecaptcha.reset(widgetId)).catch(() => {});
+      }
+      setSubmitState({ loading: false, success: false, error: 'SMS failed. Check phone number format or try again later.' });
     }
   };
 
@@ -77,26 +85,21 @@ export default function Home() {
     setSubmitState({ loading: true, success: false, error: '' });
 
     if (!emailOtp) {
-      return setSubmitState({ loading: false, success: false, error: 'Email OTP is required.' });
+      return setSubmitState({ loading: false, success: false, error: 'OTP is required.' });
     }
 
     try {
-      const verifyRes = await fetch('/api/otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, otp_code: emailOtp })
-      });
-      
-      if (!verifyRes.ok) {
-        const vData = await verifyRes.json();
-        throw new Error(vData.error || 'Invalid Email OTP');
+      if (!window.confirmationResult) {
+         throw new Error("Session expired. Please request OTP again.");
       }
+      
+      await window.confirmationResult.confirm(emailOtp);
 
       setModalStage('DETAILS');
       setSubmitState({ loading: false, success: false, error: '' });
     } catch (err) {
       console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Verification failed.' });
+      setSubmitState({ loading: false, success: false, error: 'Invalid SMS OTP or expired.' });
     }
   };
 
@@ -268,6 +271,7 @@ export default function Home() {
               </div>
             ) : (
               <div className="lead-modal-stages">
+                <div id="recaptcha-container"></div>
                 {modalStage === 'CONTACT' && (
                   <form onSubmit={handleSendOTP} className="lead-form">
                     <div className="form-group">
@@ -313,7 +317,7 @@ export default function Home() {
                           </svg>
                           Requesting OTP...
                         </span>
-                      ) : 'Send Verification OTP to Email'}
+                      ) : 'Send SMS Verification OTP'}
                     </button>
                   </form>
                 )}
@@ -321,18 +325,13 @@ export default function Home() {
                 {modalStage === 'OTP' && (
                   <form onSubmit={handleVerifyOTP} className="lead-form">
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
-                      Security check: We just sent a 6-Digit code to <strong>{formData.email}</strong>. Please enter it below.
+                      Security check: We just sent a 6-Digit SMS code to <strong>+91 {formData.mobile}</strong>. Please enter it below.
                     </p>
-                    {sandboxOtp && (
-                      <div style={{ marginBottom: '1rem', padding: '0.75rem', border: '1px dashed var(--primary)', borderRadius: '8px', textAlign: 'center' }}>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 'bold' }}>[TESTING OTP]: {sandboxOtp}</p>
-                      </div>
-                    )}
                     <div className="form-group">
-                      <label>Email OTP (Check Inbox!)</label>
+                      <label>SMS OTP</label>
                       <input 
                         type="text" 
-                        placeholder="Enter 6-Digit Email Code" 
+                        placeholder="Enter 6-Digit SMS Code" 
                         value={emailOtp} 
                         onChange={e => setEmailOtp(e.target.value)}
                         maxLength={6}
@@ -357,7 +356,7 @@ export default function Home() {
                 {modalStage === 'DETAILS' && (
                   <form onSubmit={handleSubmitFinal} className="lead-form">
                     <p style={{ fontSize: '0.85rem', color: 'var(--primary)', marginBottom: '1.5rem', fontWeight: '600' }}>
-                      ✅ Email Verified! Please provide your order details to proceed.
+                      ✅ Phone Number Verified! Please provide your order details to proceed.
                     </p>
                     <div className="form-group">
                       <label>Actual Quantity Needed</label>
