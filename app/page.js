@@ -9,24 +9,20 @@ export default function Home() {
   const [products, setProducts] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [modalStage, setModalStage] = useState('CONTACT'); // CONTACT, OTP, DETAILS
+  const [modalStage, setModalStage] = useState('LEAD_CAPTURE'); // LEAD_CAPTURE, WHATSAPP_VERIFY
   const [formData, setFormData] = useState({ name: '', mobile: '', email: '' });
   const [orderDetails, setOrderDetails] = useState({ quantity: '', location: '', upcoming: '' });
   
-  const [emailOtp, setEmailOtp] = useState('');
-  const [sandboxOtp, setSandboxOtp] = useState(null);
   const [submitState, setSubmitState] = useState({ loading: false, success: false, error: '' });
 
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => setProducts(data.products || [])).catch(console.error);
   }, []);
 
-  const openModal = (productName) => {
     setSelectedProduct(productName);
     setModalOpen(true);
-    setModalStage('CONTACT');
-    setEmailOtp('');
-    setSandboxOtp(null);
+    setModalStage('LEAD_CAPTURE');
+    setFormData({ name: '', mobile: '', email: '' });
     setOrderDetails({ quantity: '', location: '', upcoming: '' });
     setSubmitState({ loading: false, success: false, error: '' });
   };
@@ -35,74 +31,16 @@ export default function Home() {
     setModalOpen(false);
   };
 
-  const handleSendOTP = async (e) => {
+  const handleLeadSubmit = async (e) => {
     e.preventDefault();
     setSubmitState({ loading: true, success: false, error: '' });
 
-    if (!formData.name.trim() || !formData.mobile.trim() || !formData.email.trim()) {
-      return setSubmitState({ loading: false, success: false, error: 'Name, Mobile, and Email are required.' });
+    if (!formData.name.trim() || !formData.mobile.trim() || !orderDetails.quantity.trim() || !orderDetails.location.trim()) {
+      return setSubmitState({ loading: false, success: false, error: 'Please fill in all required fields.' });
     }
     if (!/^\d{10}$/.test(formData.mobile)) {
       return setSubmitState({ loading: false, success: false, error: 'Mobile number must be exactly 10 digits.' });
     }
-
-    try {
-      // 1. Send Email OTP via Backend
-      const emailRes = await fetch('/api/otp/send', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email })
-      });
-      const emailData = await emailRes.json();
-      
-      if (!emailRes.ok) {
-        throw new Error(emailData.error || 'Failed to send Email OTP');
-      }
-
-      if (emailData.sandbox_otp) {
-        setSandboxOtp(emailData.sandbox_otp);
-      }
-
-      setModalStage('OTP');
-      setSubmitState({ loading: false, success: false, error: '' });
-      
-    } catch (err) {
-      console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Error communicating with server.' });
-    }
-  };
-
-  const handleVerifyOTP = async (e) => {
-    e.preventDefault();
-    setSubmitState({ loading: true, success: false, error: '' });
-
-    if (!emailOtp) {
-      return setSubmitState({ loading: false, success: false, error: 'Email OTP is required.' });
-    }
-
-    try {
-      const verifyRes = await fetch('/api/otp/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: formData.email, otp_code: emailOtp })
-      });
-      
-      if (!verifyRes.ok) {
-        const vData = await verifyRes.json();
-        throw new Error(vData.error || 'Invalid Email OTP');
-      }
-
-      setModalStage('DETAILS');
-      setSubmitState({ loading: false, success: false, error: '' });
-    } catch (err) {
-      console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Verification failed.' });
-    }
-  };
-
-  const handleSubmitFinal = async (e) => {
-    e.preventDefault();
-    setSubmitState({ loading: true, success: false, error: '' });
 
     try {
       const leadRes = await fetch('/api/leads', {
@@ -120,18 +58,25 @@ export default function Home() {
       });
 
       if (leadRes.ok) {
-        setSubmitState({ loading: false, success: true, error: '' });
-        setFormData({ name: '', mobile: '', email: '' });
-        setOrderDetails({ quantity: '', location: '', upcoming: '' });
-        setTimeout(() => closeModal(), 3000);
+        setModalStage('WHATSAPP_VERIFY');
+        setSubmitState({ loading: false, success: false, error: '' });
       } else {
         const lData = await leadRes.json();
-        throw new Error(lData.error || 'Order submission failed.');
+        throw new Error(lData.error || 'Failed to initialize request.');
       }
     } catch (err) {
       console.error(err);
-      setSubmitState({ loading: false, success: false, error: err.message || 'Submission failed.' });
+      setSubmitState({ loading: false, success: false, error: err.message || 'Server error occurred.' });
     }
+  };
+
+  const getWhatsAppLink = () => {
+    const text = `Hi SB Construction, I am verifying my quote request.\n\n*Name:* ${formData.name}\n*Product:* ${selectedProduct || 'General Inquiry'}\n*Quantity:* ${orderDetails.quantity}\n*Location:* ${orderDetails.location}\n\nPlease confirm my request!`;
+    return `https://wa.me/919490057579?text=${encodeURIComponent(text)}`;
+  };
+
+  const handleSubmitFinal = async (e) => {
+
   };
 
   return (
@@ -268,129 +213,31 @@ export default function Home() {
               </div>
             ) : (
               <div className="lead-modal-stages">
-                {modalStage === 'CONTACT' && (
-                  <form onSubmit={handleSendOTP} className="lead-form">
+                {modalStage === 'LEAD_CAPTURE' && (
+                  <form onSubmit={handleLeadSubmit} className="lead-form">
                     <div className="form-group">
                       <label>Name</label>
-                      <input 
-                        type="text" 
-                        placeholder="Enter your name" 
-                        value={formData.name} 
-                        onChange={e => setFormData({ ...formData, name: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <input type="text" placeholder="Enter your name" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} disabled={submitState.loading} required />
                     </div>
                     <div className="form-group">
-                      <label>Mobile Number</label>
-                      <input 
-                        type="tel" 
-                        placeholder="Enter 10-digit mobile number" 
-                        value={formData.mobile} 
-                        onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                        maxLength={10}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <label>Mobile Number (For WhatsApp Info)</label>
+                      <input type="tel" placeholder="Enter 10-digit mobile number" value={formData.mobile} onChange={e => setFormData({ ...formData, mobile: e.target.value })} maxLength={10} disabled={submitState.loading} required />
                     </div>
-                    <div className="form-group">
-                      <label>Email Address</label>
-                      <input 
-                        type="email" 
-                        placeholder="Enter email to receive OTP" 
-                        value={formData.email} 
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
-                    </div>
-                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
-                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? (
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
-                          </svg>
-                          Requesting OTP...
-                        </span>
-                      ) : 'Send Verification OTP to Email'}
-                    </button>
-                  </form>
-                )}
-
-                {modalStage === 'OTP' && (
-                  <form onSubmit={handleVerifyOTP} className="lead-form">
-                    <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
-                      Security check: We just sent a 6-Digit code to <strong>{formData.email}</strong>. Please enter it below.
-                    </p>
-                    {sandboxOtp && (
-                      <div style={{ marginBottom: '1rem', padding: '0.75rem', border: '1px dashed var(--primary)', borderRadius: '8px', textAlign: 'center' }}>
-                        <p style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 'bold' }}>[TESTING OTP]: {sandboxOtp}</p>
-                      </div>
-                    )}
-                    <div className="form-group">
-                      <label>Email OTP (Check Inbox!)</label>
-                      <input 
-                        type="text" 
-                        placeholder="Enter 6-Digit Email Code" 
-                        value={emailOtp} 
-                        onChange={e => setEmailOtp(e.target.value)}
-                        maxLength={6}
-                        disabled={submitState.loading}
-                        required
-                      />
-                    </div>
-                    {submitState.error && <p className="error-msg">{submitState.error}</p>}
-                    <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? (
-                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
-                          </svg>
-                          Verifying identity...
-                        </span>
-                      ) : 'Verify OTP'}
-                    </button>
-                  </form>
-                )}
-
-                {modalStage === 'DETAILS' && (
-                  <form onSubmit={handleSubmitFinal} className="lead-form">
-                    <p style={{ fontSize: '0.85rem', color: 'var(--primary)', marginBottom: '1.5rem', fontWeight: '600' }}>
-                      ✅ Email Verified! Please provide your order details to proceed.
-                    </p>
+                    
                     <div className="form-group">
                       <label>Actual Quantity Needed</label>
-                      <input 
-                        type="text" 
-                        placeholder="e.g. 5 Loads / 3000 Bricks" 
-                        value={orderDetails.quantity} 
-                        onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <input type="text" placeholder="e.g. 5 Loads / 3000 Bricks" value={orderDetails.quantity} onChange={e => setOrderDetails({ ...orderDetails, quantity: e.target.value })} disabled={submitState.loading} required />
                     </div>
                     <div className="form-group">
                       <label>Delivery Site Location</label>
-                      <input 
-                        type="text" 
-                        placeholder="Full address or landmark" 
-                        value={orderDetails.location} 
-                        onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })}
-                        disabled={submitState.loading}
-                        required
-                      />
+                      <input type="text" placeholder="Full address or landmark" value={orderDetails.location} onChange={e => setOrderDetails({ ...orderDetails, location: e.target.value })} disabled={submitState.loading} required />
                     </div>
+
                     <div className="form-group">
-                      <label>Upcoming Load Quantity (Optional)</label>
-                      <input 
-                        type="text" 
-                        placeholder="Any future requirements?" 
-                        value={orderDetails.upcoming} 
-                        onChange={e => setOrderDetails({ ...orderDetails, upcoming: e.target.value })}
-                        disabled={submitState.loading}
-                      />
+                      <label>Email Address (Optional)</label>
+                      <input type="email" placeholder="For automated receipts" value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} disabled={submitState.loading} />
                     </div>
+
                     {submitState.error && <p className="error-msg">{submitState.error}</p>}
                     <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
                       {submitState.loading ? (
@@ -398,11 +245,37 @@ export default function Home() {
                           <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
                           </svg>
-                          Submitting Order...
+                          Processing Request...
                         </span>
-                      ) : 'Confirm & Submit Order'}
+                      ) : 'Proceed & Verify Order'}
                     </button>
                   </form>
+                )}
+
+                {modalStage === 'WHATSAPP_VERIFY' && (
+                  <div className="whatsapp-verify-container text-center" style={{ padding: '1rem' }}>
+                    <div style={{ background: 'rgba(37, 211, 102, 0.1)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(37, 211, 102, 0.3)', marginBottom: '1.5rem' }}>
+                      <ShieldCheck size={48} className="mx-auto block" style={{ color: '#25D366', marginBottom: '1rem' }} />
+                      <h4 style={{ color: '#fff', fontSize: '1.1rem', marginBottom: '0.5rem' }}>Step 2: Authenticate Identity</h4>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: '1.5' }}>
+                        To prevent fake requests and assign a truck immediately, please confirm your quote directly via our official WhatsApp line.
+                      </p>
+                    </div>
+                    
+                    <a 
+                      href={getWhatsAppLink()} 
+                      target="_blank" 
+                      rel="noreferrer" 
+                      className="btn-primary w-full block text-center"
+                      style={{ background: '#25D366', color: '#fff', boxShadow: '0 4px 15px rgba(37, 211, 102, 0.3)', paddingTop: '0.8rem', paddingBottom: '0.8rem' }}
+                      onClick={() => setSubmitState({ success: true })}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
+                        <MessageCircle size={20} />
+                        Click to Verify on WhatsApp
+                      </span>
+                    </a>
+                  </div>
                 )}
               </div>
             )}
