@@ -81,14 +81,13 @@ export async function POST(request) {
       }
     }
 
-    // Method 3: Development Sandbox (Return OTP in response if in dev)
+    // Removed testing sandbox to enforce realistic delivery
     if (!sent) {
-        return NextResponse.json({ 
-          success: true, 
-          message: 'OTP generated. If you did not receive an email, check server logs or environment variables.',
-          sandbox_otp: otp // Returning OTP for easy testing if delivery fails
-        }, { status: 200 });
+      return NextResponse.json({ 
+        error: 'Email delivery explicitly failed. System strict mode enforces realistic email dispatch. Please supply highly-secure SMTP_USER & SMTP_PASS in environment variables or verify a Resend domain to allow dynamic email capabilities.' 
+      }, { status: 500 });
     }
+
 
     return NextResponse.json({ success: true, message: `OTP sent securely via ${method}.` }, { status: 200 });
   } catch (error) {
