@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Download, CheckCircle, Circle, RefreshCw, Trash2, Globe } from 'lucide-react';
+import { Search, Download, CheckCircle, Circle, RefreshCw, Trash2, Globe, Package } from 'lucide-react';
 
 export default function AdminPage() {
   const [leads, setLeads] = useState([]);
@@ -108,6 +108,7 @@ export default function AdminPage() {
         <div className="container admin-header-flex">
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Order Dashboard</h2>
           <div className="admin-actions">
+            <button className="btn-secondary" onClick={() => window.location.href = '/admin/products'}><Package size={16} /> Inventory</button>
             <button className="btn-secondary" onClick={() => window.location.href = '/'}><Globe size={16} /> Live Site</button>
             <button className="btn-secondary" onClick={fetchLeads}><RefreshCw size={16} /> Refresh</button>
             <button className="btn-primary" onClick={exportCSV}><Download size={16} /> Export CSV</button>
