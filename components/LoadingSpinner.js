@@ -3,18 +3,6 @@
 import { useEffect, useState } from 'react';
 
 export default function LoadingSpinner() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Initial site load simulation
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  if (!loading) return null;
-
   return (
     <div style={{
       position: 'fixed', inset: 0, zIndex: 10000, 

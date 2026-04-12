@@ -1,6 +1,5 @@
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
-import LoadingSpinner from "@/components/LoadingSpinner";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -21,7 +20,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
       <body style={{ backgroundColor: '#0f172a', margin: 0 }}>
-        <LoadingSpinner />
         {children}
       </body>
     </html>
