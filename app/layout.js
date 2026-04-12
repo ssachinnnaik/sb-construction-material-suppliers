@@ -5,7 +5,6 @@ import LoadingSpinner from "@/components/LoadingSpinner";
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 const inter = Inter({
@@ -15,23 +14,13 @@ const inter = Inter({
 
 export const metadata = {
   title: "SB Construction | Material Suppliers Hyderabad",
-  description: "Hyderabad's most trusted construction material suppliers. Direct supply of bricks, sand, and stone with 100% transparency and honesty.",
-  keywords: ["construction materials Hyderabad", "Karimnagar bricks Hyderabad", "sand suppliers Hyderabad", "SB Construction Hyderabad", "building materials"],
-  authors: [{ name: "SB Construction Team" }],
-  icons: {
-    icon: "/favicon.ico",
-  },
-};
-
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
+  description: "Hyderabad's most trusted construction material suppliers. Direct supply of premium Karimnagar bricks, sand, and stone with 100% transparency and honesty.",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
-      <body style={{ fontFamily: 'var(--font-outfit), var(--font-inter), sans-serif', margin: 0 }}>
+      <body style={{ backgroundColor: '#0f172a', margin: 0 }}>
         <LoadingSpinner />
         {children}
       </body>

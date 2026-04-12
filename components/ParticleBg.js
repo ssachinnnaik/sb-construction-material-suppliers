@@ -7,6 +7,7 @@ export default function AntigravityBg() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     let animationFrameId;
 
@@ -25,11 +26,12 @@ export default function AntigravityBg() {
 
     window.addEventListener('resize', resize);
     
-    window.addEventListener('mousemove', (e) => {
+    const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       mouse.x = e.clientX - rect.left;
       mouse.y = e.clientY - rect.top;
-    });
+    };
+    window.addEventListener('mousemove', handleMouseMove);
 
     class Particle {
       constructor() {
@@ -77,17 +79,17 @@ export default function AntigravityBg() {
         let directionY = forceDirectionY * force * this.density;
 
         if (distance < mouse.radius) {
-          this.x -= directionX;
-          this.y -= directionY;
+          this.x -= directionX / 5;
+          this.y -= directionY / 5;
         } else {
           // Return to base position
           if (this.x !== this.baseX) {
             let dx = this.x - this.baseX;
-            this.x -= dx / 15;
+            this.x -= dx / 20;
           }
           if (this.y !== this.baseY) {
             let dy = this.y - this.baseY;
-            this.y -= dy / 15;
+            this.y -= dy / 20;
           }
         }
         
@@ -117,6 +119,7 @@ export default function AntigravityBg() {
 
     return () => {
       window.removeEventListener('resize', resize);
+      window.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -125,7 +128,7 @@ export default function AntigravityBg() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 z-0 pointer-events-none"
-      style={{ opacity: 0.8 }}
+      style={{ opacity: 0.6 }}
     />
   );
 }

@@ -1,10 +1,10 @@
 import supabase from '@/lib/db';
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import nodemailer from 'nodemailer';
 
 export async function POST(request) {
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY);
     const { email } = await request.json();
 
     if (!email || !email.includes('@')) {
@@ -20,7 +20,7 @@ export async function POST(request) {
       .from('otps')
       .insert([
         {
-          mobile_number: email, // Reusing column for email
+          mobile_number: email,
           otp_code: otp,
           expires_at: expiresAt,
           used: 0
@@ -29,76 +29,28 @@ export async function POST(request) {
     
     if (error) throw error;
 
-    let sent = false;
-    let method = '';
-
-    // Method 1: Resend (Best for production with domain)
     if (process.env.RESEND_API_KEY) {
-      try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const { data, error: resendError } = await resend.emails.send({
-          from: 'SB Construction <onboarding@resend.dev>',
-          to: [email],
-          subject: `Your Verification Code - SB Construction`,
-          text: `Your quote verification code is: ${otp}\n\nIt expires in 10 minutes. Please do not share this with anyone.`,
-        });
+      const { data, error: resendError } = await resend.emails.send({
+        from: 'SB Construction <onboarding@resend.dev>',
+        to: [email],
+        subject: `Your Verification Code - SB Construction`,
+        text: `Your quote verification code is: ${otp}\n\nIt expires in 10 minutes. Please do not share this with anyone.`,
+      });
 
-        if (!resendError) {
-          sent = true;
-          method = 'Resend';
-          console.log(`[OTP] Sent via Resend to ${email}. ID: ${data?.id}`);
-        } else {
-          console.warn('Resend failed, trying fallback...', resendError);
-        }
-      } catch (e) {
-        console.warn('Resend exception, trying fallback...', e.message);
+      if (resendError) {
+        console.error('Resend rejection:', resendError);
+        return NextResponse.json({ error: `Email rejected: ${resendError.message}` }, { status: 500 });
       }
+
+      console.log(`[EMAIL OTP] Sent accurately to ${email} via Resend. ID: ${data?.id}`);
+    } else {
+      console.warn(`[DEV MODE Email OTP] Code is ${otp} for ${email}. (Resend config missing)`);
+      return NextResponse.json({ error: 'Email server configuration is incomplete on this environment.' }, { status: 500 });
     }
 
-    // Method 2: Nodemailer (SMTP - Free alternative)
-    if (!sent && process.env.SMTP_USER && process.env.SMTP_PASS) {
-      try {
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS,
-          },
-        });
-
-        await transporter.sendMail({
-          from: `"SB Construction" <${process.env.SMTP_USER}>`,
-          to: email,
-          subject: `Your Verification Code - SB Construction`,
-          text: `Your quote verification code is: ${otp}\n\nIt expires in 10 minutes.`,
-        });
-
-        sent = true;
-        method = 'Nodemailer/SMTP';
-        console.log(`[OTP] Sent via SMTP to ${email}`);
-      } catch (e) {
-        console.error('SMTP failed:', e.message);
-      }
-    }
-
-    // Method 3: Development Sandbox (Return OTP in response if in dev)
-    if (!sent && process.env.NODE_ENV === 'development') {
-        return NextResponse.json({ 
-          success: true, 
-          message: '[DEV MODE] OTP generated but email delivery skipped. Check server logs or use the code below.',
-          sandbox_otp: otp // Only for testing
-        }, { status: 200 });
-    }
-
-    if (!sent) {
-      return NextResponse.json({ 
-        error: 'Email delivery failed. Please ensure SMTP_USER/PASS or RESEND_API_KEY are configured correctly for dynamic delivery.' 
-      }, { status: 500 });
-    }
-
-    return NextResponse.json({ success: true, message: `OTP sent securely via ${method}.` }, { status: 200 });
+    return NextResponse.json({ success: true, message: 'OTP sent securely to your email.' }, { status: 200 });
   } catch (error) {
-    console.error('OTP Route Error:', error);
+    console.error('Send Email OTP error details:', error);
     return NextResponse.json({ error: `OTP generation failed: ${error.message || 'Server error'}` }, { status: 500 });
   }
 }
