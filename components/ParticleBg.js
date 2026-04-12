@@ -12,20 +12,40 @@ export default function AntigravityBg() {
     let animationFrameId;
 
     let particles = [];
-    const particleCount = 150;
-    const mouse = { x: null, y: null, radius: 150 };
+    const particleCount = 200; // Increased count for better visual
+    const mouse = { x: null, y: null, radius: 250 }; // Larger radius for natural flow
     
     // Google-style vibrant palette
     const colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#7091E6'];
 
+    let titleCenterX = window.innerWidth / 2;
+    let titleCenterY = window.innerHeight / 2.5;
+
     const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      if (!canvas.parentElement) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      // Try to find exact title coordinates to perfectly fall behind the text
+      const titleEl = document.querySelector('.hero-title');
+      if (titleEl) {
+        const titleRect = titleEl.getBoundingClientRect();
+        titleCenterX = titleRect.left - rect.left + titleRect.width / 2;
+        titleCenterY = titleRect.top - rect.top + titleRect.height / 2;
+      } else {
+        titleCenterX = canvas.width / 2;
+        titleCenterY = canvas.height / 2;
+      }
+      
       init();
     };
 
     window.addEventListener('resize', resize);
     
+    // Initial setup needs a tiny delay to ensure fonts/layout have painted
+    setTimeout(resize, 100);
+
     const handleMouseMove = (e) => {
       const rect = canvas.getBoundingClientRect();
       mouse.x = e.clientX - rect.left;
@@ -35,18 +55,19 @@ export default function AntigravityBg() {
 
     class Particle {
       constructor() {
-        // Initial center-weighted distribution
         const angle = Math.random() * Math.PI * 2;
-        const radius = Math.random() * 300;
-        this.baseX = window.innerWidth / 2 + Math.cos(angle) * radius;
-        this.baseY = window.innerHeight / 2.5 + Math.sin(angle) * radius;
+        const radius = Math.random() * 350; // Spread wide around the title
+        
+        // Base coordinate is exactly the center of the title
+        this.baseX = titleCenterX + Math.cos(angle) * Math.sqrt(radius) * 15;
+        this.baseY = titleCenterY + Math.sin(angle) * Math.sqrt(radius) * 10;
         
         this.x = this.baseX;
         this.y = this.baseY;
-        this.size = Math.random() * 3 + 1;
+        this.size = Math.random() * 3.5 + 1;
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.density = (Math.random() * 30) + 1; // Movement resistance
-        this.angle = Math.random() * 360; // For floating motion
+        this.density = (Math.random() * 30) + 1; 
+        this.angle = Math.random() * 360; 
       }
 
       draw() {
@@ -56,13 +77,11 @@ export default function AntigravityBg() {
         ctx.closePath();
         ctx.fill();
         
-        // Add a subtle glow
-        ctx.shadowBlur = 10;
+        ctx.shadowBlur = 12;
         ctx.shadowColor = this.color;
       }
 
       update() {
-        // Floating motion
         this.angle += 0.02;
         const floatX = Math.cos(this.angle) * 0.5;
         const floatY = Math.sin(this.angle) * 0.5;
@@ -73,26 +92,26 @@ export default function AntigravityBg() {
           let dy = mouse.y - this.y;
           let distance = Math.sqrt(dx * dx + dy * dy);
           
-          if (distance < mouse.radius * 2) {
-            // Gentle gravitational pull towards the cursor
-            this.x += (dx / distance) * 0.5 * this.density;
-            this.y += (dy / distance) * 0.5 * this.density;
+          if (distance < mouse.radius) {
+            // Flow towards and orbit the cursor gently
+            this.x += (dx / distance) * 0.8 * this.density;
+            this.y += (dy / distance) * 0.8 * this.density;
           } else {
-            // Return to base position softly
+            // Return to where it belongs smoothly
             if (this.x !== this.baseX) {
-              this.x += (this.baseX - this.x) / 40;
+              this.x += (this.baseX - this.x) / 50;
             }
             if (this.y !== this.baseY) {
-              this.y += (this.baseY - this.y) / 40;
+              this.y += (this.baseY - this.y) / 50;
             }
           }
         } else {
-           // No mouse, return to base
+           // No mouse, idle flow at the base
            if (this.x !== this.baseX) {
-              this.x += (this.baseX - this.x) / 40;
+              this.x += (this.baseX - this.x) / 50;
            }
            if (this.y !== this.baseY) {
-              this.y += (this.baseY - this.y) / 40;
+              this.y += (this.baseY - this.y) / 50;
            }
         }
         
@@ -117,7 +136,6 @@ export default function AntigravityBg() {
       animationFrameId = requestAnimationFrame(animate);
     }
 
-    resize();
     animate();
 
     return () => {
@@ -131,7 +149,7 @@ export default function AntigravityBg() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 z-0 pointer-events-none"
-      style={{ opacity: 0.6 }}
+      style={{ opacity: 0.7 }}
     />
   );
 }
