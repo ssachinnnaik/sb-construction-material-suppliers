@@ -292,6 +292,7 @@ export default function Home() {
             Phone: <a href="tel:+919490057579" style={{ textDecoration: 'underline' }}>+91 9490 057 579</a>
           </p>
           <p style={{ marginTop: '2rem' }}>&copy; {new Date().getFullYear()} SB Construction Materials Suppliers. Serving Hyderabad.</p>
+          <p style={{ marginTop: '1rem' }}><a href="/admin" style={{ opacity: 0.5, fontSize: '0.85rem' }}>Admin Control Center</a></p>
         </div>
       </footer>
     </main>

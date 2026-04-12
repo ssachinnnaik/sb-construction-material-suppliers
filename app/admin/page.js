@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Download, CheckCircle, Circle, RefreshCw } from 'lucide-react';
+import { Search, Download, CheckCircle, Circle, RefreshCw, Trash2, Globe } from 'lucide-react';
 
 export default function AdminPage() {
   const [leads, setLeads] = useState([]);
@@ -38,18 +38,42 @@ export default function AdminPage() {
     fetchLeads();
   }, []);
 
-  const changeStatus = async (id, newStatus) => {
+  const changeStatus = async (lead, newStatus) => {
     try {
-      const res = await fetch(`/api/leads/${id}/status`, {
+      const res = await fetch(`/api/leads/${lead.id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
       if (res.ok) {
-        setLeads(leads.map(l => l.id === id ? { ...l, status: newStatus } : l));
+        setLeads(leads.map(l => l.id === lead.id ? { ...l, status: newStatus } : l));
+        
+        // Automated WhatsApp Status Notification Generator
+        if (newStatus !== 'Requested') {
+          const mobile = lead.mobile_number.replace(/\D/g, ''); 
+          const cleanProduct = lead.product_interest ? lead.product_interest.replace(' |', '') : 'your recent order';
+          const template = `Hi ${lead.name},\n\nThis is an automated update from *SB Construction*!\n\n*Order Status changed to:* [${newStatus}]\n*Product:* ${cleanProduct}\n\nWe will keep you posted. Thanks for choosing us!`;
+          const url = `https://wa.me/91${mobile}?text=${encodeURIComponent(template)}`;
+          
+          if (confirm(`Status saved to database! Do you want to automatically notify the customer via WhatsApp?\n\nIt will open a chat with +91${mobile}.`)) {
+            window.open(url, '_blank');
+          }
+        }
       }
     } catch (e) {
       console.error('Failed to change status:', e);
+    }
+  };
+
+  const deleteLead = async (id) => {
+    if (!confirm('CRITICAL WARNING: Are you certain you want to permanently delete this record from the database? This cannot be undone.')) return;
+    try {
+      const res = await fetch(`/api/leads/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setLeads(leads.filter(l => l.id !== id));
+      }
+    } catch (e) {
+      console.error('Failed to clear lead:', e);
     }
   };
 
@@ -84,6 +108,7 @@ export default function AdminPage() {
         <div className="container admin-header-flex">
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Order Dashboard</h2>
           <div className="admin-actions">
+            <button className="btn-secondary" onClick={() => window.location.href = '/'}><Globe size={16} /> Live Site</button>
             <button className="btn-secondary" onClick={fetchLeads}><RefreshCw size={16} /> Refresh</button>
             <button className="btn-primary" onClick={exportCSV}><Download size={16} /> Export CSV</button>
           </div>
@@ -115,7 +140,7 @@ export default function AdminPage() {
                   <th>Product & Quantity</th>
                   <th>Location & Future</th>
                   <th>Date</th>
-                  <th>Status</th>
+                  <th>Status & Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,9 +166,10 @@ export default function AdminPage() {
                       </td>
                       <td><div style={{ fontSize: '0.85rem' }}>{new Date(lead.timestamp).toLocaleDateString()}</div><div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{new Date(lead.timestamp).toLocaleTimeString()}</div></td>
                       <td>
-                        <select 
-                          value={lead.status || 'Requested'} 
-                          onChange={(e) => changeStatus(lead.id, e.target.value)}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <select 
+                            value={lead.status || 'Requested'} 
+                            onChange={(e) => changeStatus(lead, e.target.value)}
                           style={{
                             background: 'rgba(61, 82, 160, 0.4)',
                             color: '#EDE8F5',
@@ -160,6 +186,14 @@ export default function AdminPage() {
                           <option value="Completed">Completed</option>
                           <option value="Cancelled">Cancelled</option>
                         </select>
+                        <button 
+                          onClick={() => deleteLead(lead.id)} 
+                          style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer', padding: '0.4rem', outline: 'none' }}
+                          title="Permanently Delete Lead"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                        </div>
                       </td>
                     </tr>
                   );
