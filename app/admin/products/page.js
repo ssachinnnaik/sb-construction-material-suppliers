@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PackageOpen, Trash2, Edit2, PlusCircle, ArrowLeft, X } from 'lucide-react';
+import { PackageOpen, Trash2, Edit2, PlusCircle, ArrowLeft, X, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -19,6 +19,11 @@ export default function AdminProducts() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [submitState, setSubmitState] = useState({ loading: false, error: '', success: '' });
+
+  const handleLogout = async () => {
+    await fetch('/api/auth', { method: 'DELETE' });
+    window.location.href = '/login';
+  };
 
   const fetchProducts = async () => {
     try {
@@ -126,7 +131,10 @@ export default function AdminProducts() {
             </Link>
             <h1 className="hero-title" style={{ fontSize: '2.5rem', textAlign: 'left', marginBottom: '0' }}>Inventory Management</h1>
           </div>
-          <PackageOpen size={48} className="text-primary" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <button className="btn-secondary" onClick={handleLogout}><LogOut size={16} /> Logout</button>
+            <PackageOpen size={48} className="text-primary" />
+          </div>
         </div>
 
         <div className="admin-grid">

@@ -1,12 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Search, Download, CheckCircle, Circle, RefreshCw, Trash2, Globe, Package } from 'lucide-react';
+import { Search, Download, CheckCircle, Circle, RefreshCw, Trash2, Globe, Package, LogOut } from 'lucide-react';
 
 export default function AdminPage() {
   const [leads, setLeads] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+
+  const handleLogout = async () => {
+    await fetch('/api/auth', { method: 'DELETE' });
+    window.location.href = '/login';
+  };
 
   // Helper to parse fallback data if DB columns are missing
   const parseLeadData = (lead) => {
@@ -110,6 +115,7 @@ export default function AdminPage() {
           <div className="admin-actions">
             <button className="btn-secondary" onClick={() => window.location.href = '/admin/products'}><Package size={16} /> Inventory</button>
             <button className="btn-secondary" onClick={() => window.location.href = '/'}><Globe size={16} /> Live Site</button>
+            <button className="btn-secondary" onClick={handleLogout}><LogOut size={16} /> Logout</button>
             <button className="btn-secondary" onClick={fetchLeads}><RefreshCw size={16} /> Refresh</button>
             <button className="btn-primary" onClick={exportCSV}><Download size={16} /> Export CSV</button>
           </div>
