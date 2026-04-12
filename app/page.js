@@ -14,6 +14,7 @@ export default function Home() {
   const [orderDetails, setOrderDetails] = useState({ quantity: '', location: '', upcoming: '' });
   
   const [emailOtp, setEmailOtp] = useState('');
+  const [sandboxOtp, setSandboxOtp] = useState(null);
   const [submitState, setSubmitState] = useState({ loading: false, success: false, error: '' });
 
   useEffect(() => {
@@ -25,6 +26,7 @@ export default function Home() {
     setModalOpen(true);
     setModalStage('CONTACT');
     setEmailOtp('');
+    setSandboxOtp(null);
     setOrderDetails({ quantity: '', location: '', upcoming: '' });
     setSubmitState({ loading: false, success: false, error: '' });
   };
@@ -55,6 +57,10 @@ export default function Home() {
       
       if (!emailRes.ok) {
         throw new Error(emailData.error || 'Failed to send Email OTP');
+      }
+
+      if (emailData.sandbox_otp) {
+        setSandboxOtp(emailData.sandbox_otp);
       }
 
       setModalStage('OTP');
@@ -310,6 +316,11 @@ export default function Home() {
                     <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem', borderRadius: '4px' }}>
                       Security check: We just sent a 6-Digit code to <strong>{formData.email}</strong>. Please enter it below.
                     </p>
+                    {sandboxOtp && (
+                      <div style={{ marginBottom: '1rem', padding: '0.75rem', border: '1px dashed var(--primary)', borderRadius: '8px', textAlign: 'center' }}>
+                        <p style={{ fontSize: '0.75rem', color: 'var(--primary)', fontWeight: 'bold' }}>[TESTING OTP]: {sandboxOtp}</p>
+                      </div>
+                    )}
                     <div className="form-group">
                       <label>Email OTP (Check Inbox!)</label>
                       <input 
