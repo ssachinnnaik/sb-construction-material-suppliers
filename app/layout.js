@@ -14,8 +14,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "SB Construction | Premium Material Suppliers Hyderabad",
-  description: "Hyderabad's most trusted construction material suppliers. Direct supply of premium Karimnagar bricks, sand, and stone with 100% transparency and honesty.",
+  title: "SB Construction | Material Suppliers Hyderabad",
+  description: "Hyderabad's most trusted construction material suppliers. Direct supply of bricks, sand, and stone with 100% transparency and honesty.",
   keywords: ["construction materials Hyderabad", "Karimnagar bricks Hyderabad", "sand suppliers Hyderabad", "SB Construction Hyderabad", "building materials"],
   authors: [{ name: "SB Construction Team" }],
   icons: {

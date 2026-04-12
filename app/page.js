@@ -138,7 +138,7 @@ export default function Home() {
         <ParticleBg />
         <div className="container hero-content text-center">
           <h1 className="hero-title animate-fade-in">
-            Premium Construction <br/>
+            SB Construction <br/>
             <span className="text-primary italic">Material Suppliers</span>
           </h1>
           <p className="hero-tagline">Hyderabad's Most Trusted Direct Source</p>
