@@ -67,30 +67,33 @@ export default function AntigravityBg() {
         const floatX = Math.cos(this.angle) * 0.5;
         const floatY = Math.sin(this.angle) * 0.5;
 
-        // Interaction
-        let dx = mouse.x - this.x;
-        let dy = mouse.y - this.y;
-        let distance = Math.sqrt(dx * dx + dy * dy);
-        let forceDirectionX = dx / distance;
-        let forceDirectionY = dy / distance;
-        let maxDistance = mouse.radius;
-        let force = (maxDistance - distance) / maxDistance;
-        let directionX = forceDirectionX * force * this.density;
-        let directionY = forceDirectionY * force * this.density;
-
-        if (distance < mouse.radius) {
-          this.x -= directionX / 5;
-          this.y -= directionY / 5;
+        // Interaction (Attract to cursor)
+        if (mouse.x !== null && mouse.y !== null) {
+          let dx = mouse.x - this.x;
+          let dy = mouse.y - this.y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          
+          if (distance < mouse.radius * 2) {
+            // Gentle gravitational pull towards the cursor
+            this.x += (dx / distance) * 0.5 * this.density;
+            this.y += (dy / distance) * 0.5 * this.density;
+          } else {
+            // Return to base position softly
+            if (this.x !== this.baseX) {
+              this.x += (this.baseX - this.x) / 40;
+            }
+            if (this.y !== this.baseY) {
+              this.y += (this.baseY - this.y) / 40;
+            }
+          }
         } else {
-          // Return to base position
-          if (this.x !== this.baseX) {
-            let dx = this.x - this.baseX;
-            this.x -= dx / 20;
-          }
-          if (this.y !== this.baseY) {
-            let dy = this.y - this.baseY;
-            this.y -= dy / 20;
-          }
+           // No mouse, return to base
+           if (this.x !== this.baseX) {
+              this.x += (this.baseX - this.x) / 40;
+           }
+           if (this.y !== this.baseY) {
+              this.y += (this.baseY - this.y) / 40;
+           }
         }
         
         this.x += floatX;
