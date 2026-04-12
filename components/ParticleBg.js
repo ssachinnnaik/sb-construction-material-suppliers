@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 
-export default function ParticleBg() {
+export default function AntigravityBg() {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -11,84 +11,108 @@ export default function ParticleBg() {
     let animationFrameId;
 
     let particles = [];
-    const particleCount = 60;
-    const mouse = { x: null, y: null, radius: 100 };
+    const particleCount = 150;
+    const mouse = { x: null, y: null, radius: 150 };
+    
+    // Google-style vibrant palette
+    const colors = ['#4285F4', '#EA4335', '#FBBC05', '#34A853', '#7091E6'];
 
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      init();
     };
 
     window.addEventListener('resize', resize);
-    resize();
-
+    
     window.addEventListener('mousemove', (e) => {
-      mouse.x = e.clientX;
-      mouse.y = e.clientY;
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
     });
 
     class Particle {
       constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 2 + 1;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-        this.baseX = this.x;
-        this.baseY = this.y;
+        // Initial center-weighted distribution
+        const angle = Math.random() * Math.PI * 2;
+        const radius = Math.random() * 300;
+        this.baseX = window.innerWidth / 2 + Math.cos(angle) * radius;
+        this.baseY = window.innerHeight / 2.5 + Math.sin(angle) * radius;
+        
+        this.x = this.baseX;
+        this.y = this.baseY;
+        this.size = Math.random() * 3 + 1;
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.density = (Math.random() * 30) + 1; // Movement resistance
+        this.angle = Math.random() * 360; // For floating motion
       }
 
       draw() {
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.closePath();
         ctx.fill();
+        
+        // Add a subtle glow
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
       }
 
       update() {
-        // Move particles
-        this.x += this.speedX;
-        this.y += this.speedY;
+        // Floating motion
+        this.angle += 0.02;
+        const floatX = Math.cos(this.angle) * 0.5;
+        const floatY = Math.sin(this.angle) * 0.5;
 
-        // Boundary check
-        if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-        if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+        // Interaction
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        let forceDirectionX = dx / distance;
+        let forceDirectionY = dy / distance;
+        let maxDistance = mouse.radius;
+        let force = (maxDistance - distance) / maxDistance;
+        let directionX = forceDirectionX * force * this.density;
+        let directionY = forceDirectionY * force * this.density;
 
-        // Mouse interaction (push away)
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
         if (distance < mouse.radius) {
-          const forceDirectionX = dx / distance;
-          const forceDirectionY = dy / distance;
-          const force = (mouse.radius - distance) / mouse.radius;
-          const directionX = forceDirectionX * force * 5;
-          const directionY = forceDirectionY * force * 5;
-          
           this.x -= directionX;
           this.y -= directionY;
+        } else {
+          // Return to base position
+          if (this.x !== this.baseX) {
+            let dx = this.x - this.baseX;
+            this.x -= dx / 15;
+          }
+          if (this.y !== this.baseY) {
+            let dy = this.y - this.baseY;
+            this.y -= dy / 15;
+          }
         }
+        
+        this.x += floatX;
+        this.y += floatY;
       }
     }
 
-    const init = () => {
+    function init() {
       particles = [];
       for (let i = 0; i < particleCount; i++) {
         particles.push(new Particle());
       }
-    };
+    }
 
-    const animate = () => {
+    function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.update();
-        p.draw();
-      });
+      for (let i = 0; i < particles.length; i++) {
+        particles[i].draw();
+        particles[i].update();
+      }
       animationFrameId = requestAnimationFrame(animate);
-    };
+    }
 
-    init();
+    resize();
     animate();
 
     return () => {
@@ -100,8 +124,8 @@ export default function ParticleBg() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
+      className="absolute inset-0 z-0 pointer-events-none"
+      style={{ opacity: 0.8 }}
     />
   );
 }
