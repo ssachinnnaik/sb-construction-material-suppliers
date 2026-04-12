@@ -5,8 +5,9 @@ export async function POST(req) {
   try {
     const { password } = await req.json();
     
-    // Hardcoded master password for simplicity
-    if (password === 'admin123') {
+    const masterPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    
+    if (password === masterPassword) {
       const cookieStore = cookies();
       (await cookieStore).set('admin_auth', 'true', { 
         httpOnly: true, 
