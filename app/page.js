@@ -18,7 +18,7 @@ export default function Home() {
   useEffect(() => {
     fetch('/api/products').then(res => res.json()).then(data => setProducts(data.products || [])).catch(console.error);
   }, []);
-
+  const openModal = (productName) => {
     setSelectedProduct(productName);
     setModalOpen(true);
     setModalStage('LEAD_CAPTURE');
