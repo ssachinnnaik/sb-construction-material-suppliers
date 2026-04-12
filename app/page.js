@@ -306,7 +306,14 @@ export default function Home() {
                     </div>
                     {submitState.error && <p className="error-msg">{submitState.error}</p>}
                     <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? 'Processing...' : 'Send Verification OTP to Email'}
+                      {submitState.loading ? (
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
+                          </svg>
+                          Requesting OTP...
+                        </span>
+                      ) : 'Send Verification OTP to Email'}
                     </button>
                   </form>
                 )}
@@ -335,7 +342,14 @@ export default function Home() {
                     </div>
                     {submitState.error && <p className="error-msg">{submitState.error}</p>}
                     <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? 'Verifying...' : 'Verify OTP'}
+                      {submitState.loading ? (
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
+                          </svg>
+                          Verifying identity...
+                        </span>
+                      ) : 'Verify OTP'}
                     </button>
                   </form>
                 )}
@@ -379,7 +393,14 @@ export default function Home() {
                     </div>
                     {submitState.error && <p className="error-msg">{submitState.error}</p>}
                     <button type="submit" className="btn-primary w-full mt-2" disabled={submitState.loading}>
-                      {submitState.loading ? 'Submitting...' : 'Confirm & Submit Order'}
+                      {submitState.loading ? (
+                        <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                          <svg className="animate-spin" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
+                          </svg>
+                          Submitting Order...
+                        </span>
+                      ) : 'Confirm & Submit Order'}
                     </button>
                   </form>
                 )}
