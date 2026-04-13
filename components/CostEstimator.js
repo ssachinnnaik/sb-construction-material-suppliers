@@ -1,23 +1,70 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { Calculator, ShoppingCart } from 'lucide-react';
-
-const materialPrices = {
-  'coarse-sand': { name: 'Coarse Sand', price: 1200, unit: 'Ton' },
-  'fine-sand': { name: 'Fine Sand', price: 1100, unit: 'Ton' },
-  'karimnagar-bricks': { name: 'Karimnagar Bricks', price: 9, unit: 'Brick' },
-  'local-bricks': { name: 'Local Bricks', price: 6, unit: 'Brick' },
-};
+import { Calculator, ShoppingCart, RefreshCw } from 'lucide-react';
 
 export default function CostEstimator({ onQuoteRequest }) {
-  const [selectedMaterial, setSelectedMaterial] = useState('coarse-sand');
+  const [materialPrices, setMaterialPrices] = useState({});
+  const [selectedMaterial, setSelectedMaterial] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const [totalCost, setTotalCost] = useState(1200);
+  const [totalCost, setTotalCost] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const rate = materialPrices[selectedMaterial].price;
-    setTotalCost(rate * quantity);
-  }, [selectedMaterial, quantity]);
+    const fetchMaterials = async () => {
+      try {
+        const res = await fetch('/api/products');
+        const data = await res.json();
+        const loadedPrices = {};
+        let firstMat = '';
+
+        if (data.products && data.products.length > 0) {
+          data.products.forEach((prod, index) => {
+            // Regex to extract number (e.g. "₹1200 / Ton" -> 1200)
+            const numMatch = prod.price ? prod.price.match(/\d+(\.\d+)?/) : null;
+            const price = numMatch ? parseFloat(numMatch[0]) : 0;
+            
+            // Regex to extract unit (e.g. "₹1200 / Ton" -> "Ton")
+            const unitMatch = prod.price ? prod.price.match(/\/\s*([a-zA-Z]+)/) : null;
+            let unit = unitMatch ? unitMatch[1].trim() : 'Unit';
+            if(unit.toLowerCase() === 'brick') unit = 'Brick';
+            if(unit.toLowerCase() === 'bag') unit = 'Bag';
+            
+            loadedPrices[prod.id] = { name: prod.name, price, unit };
+            if (index === 0) firstMat = prod.id;
+          });
+          setMaterialPrices(loadedPrices);
+          setSelectedMaterial(firstMat);
+        }
+      } catch (e) {
+        console.error("Failed to load DB products for estimator", e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMaterials();
+  }, []);
+
+  useEffect(() => {
+    if (selectedMaterial && materialPrices[selectedMaterial]) {
+      const rate = materialPrices[selectedMaterial].price;
+      setTotalCost(rate * quantity);
+    }
+  }, [selectedMaterial, quantity, materialPrices]);
+
+  if (loading) return (
+    <section className="estimator-section section-padding" style={{ position: 'relative', zIndex: 5 }}>
+      <div className="container" style={{ textAlign: 'center' }}>
+        <RefreshCw size={40} className="text-primary spinner" style={{ animation: 'spin 1s linear infinite', margin: '0 auto' }} />
+        <p style={{ marginTop: '1rem', color: '#5D4037', fontWeight: 'bold' }}>Syncing live inventory rates...</p>
+      </div>
+    </section>
+  );
+
+  if (!selectedMaterial || Object.keys(materialPrices).length === 0) {
+    return null; // Don't show if db is empty
+  }
+
+  const activeMaterial = materialPrices[selectedMaterial];
 
   return (
     <section className="estimator-section section-padding" style={{ position: 'relative', zIndex: 5 }}>
@@ -33,7 +80,7 @@ export default function CostEstimator({ onQuoteRequest }) {
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             <div>
-              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', color: '#4E342E' }}>Select Material</label>
+              <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', color: '#4E342E' }}>Select Material (Live DB Rates)</label>
               <select 
                 value={selectedMaterial} 
                 onChange={(e) => {
@@ -50,13 +97,13 @@ export default function CostEstimator({ onQuoteRequest }) {
 
             <div>
               <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '0.5rem', color: '#4E342E' }}>
-                Quantity Required ({materialPrices[selectedMaterial].unit}s): <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>{quantity}</span>
+                Quantity Required ({activeMaterial.unit}s): <span style={{ color: 'var(--primary)', fontSize: '1.2rem' }}>{quantity}</span>
               </label>
               <input 
                 type="range" 
                 min="1" 
-                max={materialPrices[selectedMaterial].unit === 'Brick' ? 20000 : 50} 
-                step={materialPrices[selectedMaterial].unit === 'Brick' ? 500 : 1}
+                max={activeMaterial.unit.includes('Brick') ? 20000 : 100} 
+                step={activeMaterial.unit.includes('Brick') ? 500 : 1}
                 value={quantity} 
                 onChange={(e) => setQuantity(Number(e.target.value))}
                 style={{ width: '100%', accentColor: 'var(--primary)', height: '8px' }}
@@ -72,7 +119,7 @@ export default function CostEstimator({ onQuoteRequest }) {
                 <p style={{ margin: 0, fontSize: '0.8rem', color: '#5D4037' }}>*Transport fees calculated separately at delivery</p>
               </div>
               <button 
-                onClick={() => onQuoteRequest(`${materialPrices[selectedMaterial].name} - Estimated ${quantity} ${materialPrices[selectedMaterial].unit}s`)} 
+                onClick={() => onQuoteRequest(`${activeMaterial.name} - Estimated ${quantity} ${activeMaterial.unit}s`)} 
                 className="btn-primary" 
                 style={{ fontSize: '1.1rem', padding: '1rem 2rem', background: 'var(--success)', border: '1px solid #1b5e20', boxShadow: '0 5px 0 #1b5e20' }}
               >

@@ -513,93 +513,142 @@ ul { list-style: none; }
   100% { transform: translateY(100%); opacity: 0; }
 }
 
-/* Advanced Custom Buffering Loader */
+/* Extreme Custom Buffering Loader */
 .custom-loader-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 1.5rem;
   padding: 2rem;
 }
 
-.advanced-loader {
+.extreme-loader-ring {
   position: relative;
-  width: 100px;
-  height: 100px;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--primary);
+  border-bottom: 4px solid var(--warning);
+  box-shadow: 0 0 30px rgba(230, 81, 0, 0.2), inset 0 0 20px rgba(255,255,255,0.4);
+  animation: ringSpin 4s linear infinite;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* 1. Orbiting Bricks */
-.loader-orbit {
+@keyframes ringSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.extreme-loader {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  animation: counterSpin 4s linear infinite; /* Negates the ring spin for the items inside */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes counterSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+/* 1. Brick Phase 0-25% */
+.seq-brick {
+  position: absolute;
+  width: 60px;
+  height: 30px;
+  background: #A53F3F;
+  border: 2px solid #7A2222;
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4), inset -2px -2px 0 rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.3);
+  border-radius: 3px;
+  opacity: 0;
+  animation: crazyBrick 4s infinite linear;
+}
+
+@keyframes crazyBrick {
+  0% { transform: scale(0) rotateX(0) rotateY(0); opacity: 0; }
+  5% { transform: scale(1.5) rotateX(180deg) rotateY(180deg); opacity: 1; filter: drop-shadow(0 0 10px #A53F3F); }
+  20% { transform: scale(1) rotateX(360deg) rotateY(360deg); opacity: 1; }
+  25% { transform: scale(0) rotateX(720deg) rotateY(720deg); opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* 2. Steel Rebar Phase 25-50% */
+.seq-steel {
   position: absolute;
   width: 100%;
   height: 100%;
-  animation: orbitCycle 3.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
-}
-
-@keyframes orbitCycle {
-  0% { transform: rotate(0deg) scale(1); opacity: 1; }
-  20% { transform: rotate(180deg) scale(1.1); opacity: 1; }
-  28% { transform: rotate(270deg) scale(0); opacity: 0; }
-  90% { transform: rotate(360deg) scale(0); opacity: 0; }
-  100% { transform: rotate(360deg) scale(1); opacity: 1; }
-}
-
-.mini-brick {
-  position: absolute;
-  width: 24px;
-  height: 12px;
-  background: #A53F3F;
-  border: 1px solid #7A2222;
-  box-shadow: inset 1px 1px 0 rgba(255,255,255,0.4), 0 2px 5px rgba(0,0,0,0.3);
-  border-radius: 1px;
-}
-.lb-1 { top: 10px; left: 38px; }
-.lb-2 { bottom: 10px; left: 38px; }
-.lb-3 { left: 10px; top: 44px; width: 12px; height: 24px; }
-.lb-4 { right: 10px; top: 44px; width: 12px; height: 24px; }
-
-/* 2. Sand Pile */
-.loader-sand-pile {
-  position: absolute;
-  bottom: 0px;
-  width: 70px;
-  height: 40px;
-  background: linear-gradient(to top, #D2A850, transparent);
-  border-radius: 50% 50% 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   opacity: 0;
-  animation: sandRises 3.5s ease-in-out infinite;
+  animation: crazySteel 4s infinite ease-in-out;
 }
 
-@keyframes sandRises {
-  0%, 30% { opacity: 0; transform: translateY(20px) scale(0.3); }
-  45% { opacity: 1; transform: translateY(0) scale(1.1); filter: blur(1px); }
-  60% { opacity: 1; transform: translateY(0) scale(1); }
-  65%, 100% { opacity: 0; transform: translateY(20px) scale(0); }
-}
-
-/* 3. Cement Drop */
-.loader-cement-block {
+.steel-rod {
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 8px;
+  height: 80px;
+  background: linear-gradient(to right, #444, #aaa, #444);
+  box-shadow: 0 0 15px rgba(255,255,255,0.8);
+  border-radius: 4px;
+}
+.sr2 { transform: rotate(90deg); }
+
+@keyframes crazySteel {
+  0%, 24% { opacity: 0; transform: scale(0) rotate(0deg); }
+  25% { opacity: 1; transform: scale(1.5) rotate(0deg); filter: blur(2px); }
+  35% { opacity: 1; transform: scale(1) rotate(180deg); filter: blur(0); }
+  45% { opacity: 1; transform: scale(1) rotate(360deg); }
+  50% { opacity: 0; transform: scale(0) rotate(540deg); }
+  100% { opacity: 0; }
+}
+
+/* 3. Sand Tornado Phase 50-75% */
+.seq-sand {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: conic-gradient(from 0deg, transparent, #D2A850, #E0C070, transparent);
+  border-radius: 50%;
+  filter: blur(3px) drop-shadow(0 0 10px #D2A850);
+  opacity: 0;
+  animation: crazySand 4s infinite cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes crazySand {
+  0%, 49% { opacity: 0; transform: scale(0) translateY(40px); }
+  50% { opacity: 1; transform: scale(1.2) translateY(0) rotate(0deg); }
+  65% { opacity: 1; transform: scale(1) translateY(0) rotate(720deg); }
+  75% { opacity: 0; transform: scale(0) translateY(-40px) rotate(1440deg); }
+  100% { opacity: 0; }
+}
+
+/* 4. Cement Block Phase 75-100% */
+.seq-cement {
+  position: absolute;
+  width: 60px;
+  height: 60px;
   background: #D4D0C8;
-  border: 4px solid #808080;
-  box-shadow: inset 3px 3px 6px rgba(255,255,255,0.8), -3px -3px 8px rgba(0,0,0,0.4);
-  border-radius: 3px;
+  border: 3px solid #808080;
+  box-shadow: inset 4px 4px 10px rgba(255,255,255,0.9), inset -4px -4px 10px rgba(0,0,0,0.5), 0 20px 30px rgba(0,0,0,0.4);
+  border-radius: 4px;
   background-image: url('https://www.transparenttextures.com/patterns/concrete-wall.png');
   opacity: 0;
-  animation: cementDrops 3.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite;
+  animation: crazyCement 4s infinite cubic-bezier(0.68, -0.55, 0.27, 1.55);
 }
 
-@keyframes cementDrops {
-  0%, 65% { opacity: 0; transform: translateY(-40px) scale(0.2) rotate(45deg); }
-  75% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+@keyframes crazyCement {
+  0%, 74% { opacity: 0; transform: translateY(-80px) scale(0.5) rotate(-45deg); }
+  75% { opacity: 1; transform: translateY(0) scale(1.2) rotate(0deg); }
   85% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-  95%, 100% { opacity: 0; transform: translateY(50px) scale(0.5) rotate(-45deg); }
+  95% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translateY(80px) scale(0) rotate(45deg); }
 }
 
 /* Keep tailwind/globals specific old fixes */
