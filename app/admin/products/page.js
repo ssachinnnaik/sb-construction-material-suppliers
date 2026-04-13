@@ -121,7 +121,7 @@ export default function AdminProducts() {
   };
 
   return (
-    <main className="main-content" style={{ minHeight: '100vh', padding: '2rem', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1587582423116-ec07293f0395?auto=format&fit=crop&q=80") center/cover fixed' }}>
+    <main className="main-content" style={{ minHeight: '100vh', padding: '2rem', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1541888086925-0c13bb135fdf?auto=format&fit=crop&q=80") center/cover fixed' }}>
       <div className="container">
         
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)', padding: '1rem 2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
