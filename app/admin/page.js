@@ -108,7 +108,7 @@ export default function AdminPage() {
   );
 
   return (
-    <div className="admin-container" style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&q=80") center/cover fixed' }}>
+    <div className="admin-container" style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1541888086925-0c13bb135fdf?auto=format&fit=crop&q=80") center/cover fixed' }}>
       <header className="admin-header">
         <div className="container admin-header-flex">
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Order Dashboard</h2>
