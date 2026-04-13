@@ -6,6 +6,7 @@ import Image from 'next/image';
 import ParticleBg from '@/components/ParticleBg';
 import SiteSimulation from '@/components/SiteSimulation';
 import CustomLoader from '@/components/CustomLoader';
+import CostEstimator from '@/components/CostEstimator';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -204,6 +205,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Live Cost Estimator */}
+      <CostEstimator onQuoteRequest={(productDetails) => openModal(productDetails)} />
 
       {/* Floating Action Buttons */}
       <div className="floating-actions">

@@ -108,7 +108,7 @@ export default function AdminPage() {
   );
 
   return (
-    <div className="admin-container">
+    <div className="admin-container" style={{ minHeight: '100vh', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&q=80") center/cover fixed' }}>
       <header className="admin-header">
         <div className="container admin-header-flex">
           <h2 style={{ fontSize: '1.5rem', marginBottom: '0' }}>Order Dashboard</h2>
@@ -135,9 +135,9 @@ export default function AdminPage() {
         </div>
 
         {loading ? (
-          <p style={{ textAlign: 'center', padding: '3rem' }}>Loading orders...</p>
+          <p style={{ textAlign: 'center', padding: '3rem', color: '#5D4037', fontWeight: 'bold' }}>Loading orders...</p>
         ) : (
-          <div className="table-wrapper" style={{ overflowX: 'auto', background: 'var(--bg-card)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+          <div className="table-wrapper frosted-panel" style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.45)', backdropFilter: 'blur(12px) saturate(150%)', borderRadius: '12px', borderTop: '5px solid var(--primary)', borderLeft: '1px solid rgba(255,255,255,0.8)', borderRight: '1px solid rgba(255,255,255,0.5)', borderBottom: '1px solid rgba(255,255,255,0.3)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
             <table className="admin-table">
               <thead>
                 <tr>
@@ -218,39 +218,47 @@ export default function AdminPage() {
 
       <style jsx>{`
         .admin-header {
-          background: var(--bg-card);
+          background: rgba(255, 255, 255, 0.35);
+          backdrop-filter: blur(15px);
+          -webkit-backdrop-filter: blur(15px);
           padding: 1.5rem 0;
-          border-bottom: 2px solid var(--primary);
+          border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
         .admin-table {
           width: 100%;
           border-collapse: collapse;
           text-align: left;
+          color: #2D1C16;
         }
         .admin-table th {
           padding: 1rem;
-          background: rgba(255,255,255,0.05);
-          color: var(--primary);
+          background: rgba(255,255,255,0.2);
+          color: #2D1C16;
           text-transform: uppercase;
           font-size: 0.85rem;
           letter-spacing: 1px;
+          border-bottom: 2px solid rgba(255, 255, 255, 0.6);
         }
         .admin-table td {
           padding: 1rem;
-          border-top: 1px solid var(--border-color);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
         .admin-table tr:hover {
-          background: rgba(255,255,255,0.02);
+          background: rgba(255,255,255,0.25);
         }
         .row-completed {
-          opacity: 0.5;
+          opacity: 0.6;
+          background: rgba(200,200,200,0.2) !important;
         }
         .badge {
-          background: rgba(250, 204, 21, 0.1);
+          background: rgba(255, 255, 255, 0.6);
           color: var(--primary);
           padding: 0.3rem 0.6rem;
           border-radius: 4px;
           font-size: 0.85rem;
+          border: 1px solid rgba(255,255,255,0.8);
+          box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
         }
       `}</style>
     </div>

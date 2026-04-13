@@ -121,15 +121,15 @@ export default function AdminProducts() {
   };
 
   return (
-    <main className="main-content" style={{ minHeight: '100vh', padding: '2rem' }}>
+    <main className="main-content" style={{ minHeight: '100vh', padding: '2rem', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1543168256-418811576931?auto=format&fit=crop&q=80") center/cover fixed' }}>
       <div className="container">
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)', padding: '1rem 2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
           <div>
-            <Link href="/admin" className="text-muted" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: 'var(--text-muted)' }}>
+            <Link href="/admin" className="text-muted" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: '#2D1C16', fontWeight: 'bold' }}>
               <ArrowLeft size={18} /> Back to Leads
             </Link>
-            <h1 className="hero-title" style={{ fontSize: '2.5rem', textAlign: 'left', marginBottom: '0' }}>Inventory Management</h1>
+            <h1 className="hero-title" style={{ fontSize: '2.5rem', textAlign: 'left', marginBottom: '0', textShadow: 'none' }}>Inventory Management</h1>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
             <button className="btn-secondary" onClick={handleLogout}><LogOut size={16} /> Logout</button>
@@ -140,7 +140,7 @@ export default function AdminProducts() {
         <div className="admin-grid">
           
           {/* Add Form */}
-          <div className="about-card" style={{ textAlign: 'left' }}>
+          <div className="about-card" style={{ textAlign: 'left', background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(12px) saturate(150%)' }}>
             <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 {isEditing ? <Edit2 className="text-primary"/> : <PlusCircle className="text-primary"/>} 
@@ -185,12 +185,12 @@ export default function AdminProducts() {
           </div>
 
           {/* List Table */}
-          <div className="about-card" style={{ overflowX: 'auto', textAlign: 'left' }}>
-            <h3 style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>Live Products Catalog</h3>
+          <div className="about-card" style={{ overflowX: 'auto', textAlign: 'left', background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(12px) saturate(150%)', color: '#2D1C16' }}>
+            <h3 style={{ borderBottom: '1px solid rgba(255,255,255,0.4)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>Live Products Catalog</h3>
             {loading ? <p>Loading inventory...</p> : (
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                 <thead>
-                  <tr style={{ borderBottom: '2px solid var(--border-color)' }}>
+                  <tr style={{ borderBottom: '2px solid rgba(255,255,255,0.6)' }}>
                     <th style={{ padding: '1rem 0.5rem' }}>Image</th>
                     <th style={{ padding: '1rem 0.5rem' }}>Name</th>
                     <th style={{ padding: '1rem 0.5rem' }}>Price</th>
@@ -199,7 +199,7 @@ export default function AdminProducts() {
                 </thead>
                 <tbody>
                   {products.map(p => (
-                    <tr key={p.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
+                    <tr key={p.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.4)' }}>
                       <td style={{ padding: '1rem 0.5rem' }}>
                         <Image src={p.img_path} alt={p.name} width={60} height={60} style={{ objectFit: 'cover', borderRadius: '4px' }} unoptimized />
                       </td>
