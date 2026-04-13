@@ -17,6 +17,8 @@ async function testRegions() {
 CREATE TABLE IF NOT EXISTS leads (id SERIAL PRIMARY KEY, name TEXT NOT NULL, mobile_number TEXT NOT NULL, product_interest TEXT NOT NULL, timestamp TIMESTAMPTZ DEFAULT NOW(), contacted INTEGER DEFAULT 0, email TEXT DEFAULT '', status TEXT DEFAULT 'Requested');
 CREATE TABLE IF NOT EXISTS products (id TEXT PRIMARY KEY, name TEXT NOT NULL, "desc" TEXT NOT NULL, price TEXT, img_path TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS otps (id SERIAL PRIMARY KEY, mobile_number TEXT NOT NULL, otp_code TEXT NOT NULL, expires_at TIMESTAMPTZ NOT NULL, used INTEGER DEFAULT 0);
+CREATE TABLE IF NOT EXISTS admin_settings (id SERIAL PRIMARY KEY, master_password TEXT NOT NULL);
+INSERT INTO admin_settings (id, master_password) VALUES (1, 'admin123') ON CONFLICT DO NOTHING;
 INSERT INTO products (id, name, "desc", price, img_path) VALUES 
 ('coarse-sand', 'Coarse Sand', 'Premium coarse river sand ideal for concrete mixing.', '₹1200 / Ton', '/sand-coarse.png'),
 ('fine-sand', 'Fine Sand', 'Superior fine sand for smooth plastering.', '₹1100 / Ton', '/sand-fine.png'),

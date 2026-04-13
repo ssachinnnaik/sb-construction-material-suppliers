@@ -5,7 +5,7 @@ import path from 'path';
 
 export async function GET() {
   try {
-    const { data: products, error } = await supabase.from('products').select('*');
+    const { data: products, error } = await supabase.from('products').select('*').neq('id', '_config_admin_pwd');
     if (error) throw error;
     
     return NextResponse.json({ products });
