@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react';
 import { Phone, MessageCircle, AlertTriangle, ShieldCheck, Truck, ChevronRight, X } from 'lucide-react';
 import Image from 'next/image';
 import ParticleBg from '@/components/ParticleBg';
-import SiteSimulation from '@/components/SiteSimulation';
-import CustomLoader from '@/components/CustomLoader';
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -93,11 +91,10 @@ export default function Home() {
 
   return (
     <main className="main-content">
-      <SiteSimulation />
       {/* Hero Section */}
       <section className="hero">
-        <div className="container hero-content" style={{ position: 'relative', overflow: 'hidden' }}>
-          <ParticleBg />
+        <ParticleBg />
+        <div className="container hero-content">
           <h1 className="hero-title">
             <span className="text-primary">SB</span> CONSTRUCTION <br/> MATERIALS SUPPLIERS
           </h1>
@@ -180,7 +177,12 @@ export default function Home() {
           <h2 className="section-title">Our Products</h2>
           <div className="product-grid">
             {isLoading ? (
-               <CustomLoader />
+               <div className="text-center w-full mt-8 mb-8" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1rem', gridColumn: '1 / -1' }}>
+                 <svg className="animate-spin" width="50" height="50" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                   <circle cx="12" cy="12" r="10" stroke="var(--primary, #D2A850)" strokeWidth="3" strokeDasharray="32" strokeLinecap="round" opacity="0.8"></circle>
+                 </svg>
+                 <p style={{ color: 'var(--text-muted, #aaa)', fontSize: '1.2rem' }}>Loading premium catalog...</p>
+               </div>
             ) : products.length === 0 ? (
                <p className="text-center w-full mt-4" style={{ gridColumn: '1 / -1' }}>No products currently available.</p>
             ) : null}
