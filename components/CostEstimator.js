@@ -116,7 +116,7 @@ export default function CostEstimator({ onQuoteRequest }) {
                 <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: '900', color: 'var(--success)' }}>
                   ₹{totalCost.toLocaleString('en-IN')}
                 </p>
-                <p style={{ margin: 0, fontSize: '0.8rem', color: '#5D4037' }}>*Transport fees calculated separately at delivery</p>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: '#5D4037' }}>*Total cost inclusive of standard transport charges</p>
               </div>
               <button 
                 onClick={() => onQuoteRequest(`${activeMaterial.name} - Estimated ${quantity} ${activeMaterial.unit}s`)} 
