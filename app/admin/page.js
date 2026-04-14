@@ -225,6 +225,18 @@ export default function AdminPage() {
           border-bottom: 2px solid rgba(255, 255, 255, 0.5);
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
         }
+        .admin-header-flex {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 1rem;
+        }
+        .admin-actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.5rem;
+        }
         .admin-table {
           width: 100%;
           border-collapse: collapse;
@@ -259,6 +271,10 @@ export default function AdminPage() {
           font-size: 0.85rem;
           border: 1px solid rgba(255,255,255,0.8);
           box-shadow: inset 0 0 5px rgba(255,255,255,0.5);
+        }
+        @media (max-width: 768px) {
+          .admin-header-flex { flex-direction: column; align-items: flex-start; }
+          .admin-actions { flex-direction: row; }
         }
       `}</style>
     </div>

@@ -121,23 +121,23 @@ export default function AdminProducts() {
   };
 
   return (
-    <main className="main-content" style={{ minHeight: '100vh', padding: '2rem', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1541888086925-0c13bb135fdf?auto=format&fit=crop&q=80") center/cover fixed' }}>
+    <main className="main-content" style={{ minHeight: '100vh', padding: 'clamp(1rem, 3vw, 2rem)', background: 'linear-gradient(to bottom, rgba(232, 216, 195, 0.8) 0%, rgba(206, 186, 160, 0.9) 100%), url("https://images.unsplash.com/photo-1541888086925-0c13bb135fdf?auto=format&fit=crop&q=80") center/cover fixed' }}>
       <div className="container">
         
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)', padding: '1rem 2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-          <div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem', marginBottom: '2rem', background: 'rgba(255,255,255,0.3)', backdropFilter: 'blur(10px)', padding: '1rem 1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.5)', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+          <div style={{ flex: '1 1 200px' }}>
             <Link href="/admin" className="text-muted" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', color: '#2D1C16', fontWeight: 'bold' }}>
               <ArrowLeft size={18} /> Back to Leads
             </Link>
-            <h1 className="hero-title" style={{ fontSize: '2.5rem', textAlign: 'left', marginBottom: '0', textShadow: 'none' }}>Inventory Management</h1>
+            <h1 className="hero-title" style={{ fontSize: 'clamp(1.5rem, 5vw, 2.5rem)', textAlign: 'left', marginBottom: '0', textShadow: 'none' }}>Inventory Management</h1>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexShrink: 0 }}>
             <button className="btn-secondary" onClick={handleLogout}><LogOut size={16} /> Logout</button>
             <PackageOpen size={48} className="text-primary" />
           </div>
         </div>
 
-        <div className="admin-grid">
+        <div className="admin-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 380px), 1fr))', gap: '2rem' }}>
           
           {/* Add Form */}
           <div className="about-card" style={{ textAlign: 'left', background: 'rgba(255, 255, 255, 0.45)', backdropFilter: 'blur(12px) saturate(150%)' }}>

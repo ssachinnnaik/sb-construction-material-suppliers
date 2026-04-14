@@ -110,10 +110,10 @@ export default function CostEstimator({ onQuoteRequest }) {
               />
             </div>
             
-            <div style={{ background: 'rgba(255,255,255,0.6)', padding: '1.5rem', borderRadius: '8px', borderLeft: '5px solid var(--success)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-              <div>
+            <div style={{ background: 'rgba(255,255,255,0.6)', padding: '1.5rem', borderRadius: '8px', borderLeft: '5px solid var(--success)', display: 'flex', flexWrap: 'wrap', gap: '1rem', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
+              <div style={{ flex: '1 1 200px' }}>
                 <p style={{ margin: 0, fontWeight: 'bold', color: '#5D4037', fontSize: '0.9rem', textTransform: 'uppercase' }}>Estimated Material Cost</p>
-                <p style={{ margin: 0, fontSize: '2.5rem', fontWeight: '900', color: 'var(--success)' }}>
+                <p style={{ margin: 0, fontSize: 'clamp(1.8rem, 5vw, 2.5rem)', fontWeight: '900', color: 'var(--success)' }}>
                   ₹{totalCost.toLocaleString('en-IN')}
                 </p>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: '#5D4037' }}>*Total cost inclusive of standard transport charges</p>
@@ -121,7 +121,7 @@ export default function CostEstimator({ onQuoteRequest }) {
               <button 
                 onClick={() => onQuoteRequest(`${activeMaterial.name} - Estimated ${quantity} ${activeMaterial.unit}s`)} 
                 className="btn-primary" 
-                style={{ fontSize: '1.1rem', padding: '1rem 2rem', background: 'var(--success)', border: '1px solid #1b5e20', boxShadow: '0 5px 0 #1b5e20' }}
+                style={{ fontSize: '1rem', padding: '0.8rem 1.5rem', background: 'var(--success)', border: '1px solid #1b5e20', boxShadow: '0 5px 0 #1b5e20', flex: '1 1 auto', whiteSpace: 'nowrap' }}
               >
                 <ShoppingCart size={20} /> Request Exact Quote
               </button>

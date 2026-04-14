@@ -16,10 +16,16 @@ export const metadata = {
   description: "Hyderabad's most trusted construction material suppliers. Direct supply of premium Karimnagar bricks, sand, and stone with 100% transparency and honesty.",
 };
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${outfit.variable} ${inter.variable}`}>
-      <body style={{ backgroundColor: '#0f172a', margin: 0 }}>
+      <body style={{ backgroundColor: '#0f172a', margin: 0, overflowX: 'hidden' }}>
         {children}
       </body>
     </html>

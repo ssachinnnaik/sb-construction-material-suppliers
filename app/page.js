@@ -191,9 +191,9 @@ export default function Home() {
                   <Image src={product.img_path || '/sand-coarse.png'} alt={product.name} width={400} height={200} style={{ objectFit: 'cover', width: '100%', height: '200px', display: 'block' }} unoptimized />
                 </div>
                 <div className="product-info">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <h3 style={{ width: '70%' }}>{product.name}</h3>
-                    {product.price && <span style={{ background: '#D0EDDA', color: '#1a1a1a', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold' }}>{product.price}</span>}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <h3 style={{ flex: '1', wordBreak: 'break-word' }}>{product.name}</h3>
+                    {product.price && <span style={{ background: '#D0EDDA', color: '#1a1a1a', padding: '0.2rem 0.5rem', borderRadius: '4px', fontSize: '0.85rem', fontWeight: 'bold', whiteSpace: 'nowrap' }}>{product.price}</span>}
                   </div>
                   <p>{product.desc}</p>
                   <button className="btn-outline-primary mt-4" onClick={() => openModal(product.name)}>
