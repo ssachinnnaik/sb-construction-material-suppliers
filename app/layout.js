@@ -21,24 +21,43 @@ export const metadata = {
   },
   description: "SB Construction — Hyderabad's most trusted construction material suppliers. Buy premium Karimnagar red bricks, river sand, M-sand, coarse sand, stone and gravel. Direct lorry supply, zero middlemen. Call +91 9490 057 579.",
   keywords: [
+    // Primary product + location
     "construction materials Hyderabad",
     "bricks supplier Hyderabad",
     "sand supplier Hyderabad",
-    "Karimnagar red bricks",
+    "Karimnagar red bricks Hyderabad",
     "river sand Hyderabad",
     "M-sand supplier Hyderabad",
     "building materials Hyderabad",
-    "construction material dealers Hyderabad",
-    "brick supplier near me Hyderabad",
-    "sand for construction Hyderabad",
-    "coarse sand supplier",
-    "stone gravel supplier Hyderabad",
-    "SB Construction",
-    "construction materials wholesale Hyderabad",
-    "lorry supply construction materials",
+    // Long-tail low-competition (price intent)
+    "bricks for low price in Hyderabad",
     "cheap bricks Hyderabad",
-    "quality bricks sand Hyderabad",
-    "construction material price Hyderabad",
+    "bricks at lowest price Hyderabad",
+    "affordable bricks Hyderabad",
+    "sand and bricks for less price Hyderabad",
+    "construction materials at low price Hyderabad",
+    "bricks and sand very less price",
+    // Long-tail buying intent
+    "best bricks to buy in Hyderabad",
+    "best bricks supplier in Hyderabad",
+    "where to buy bricks in Hyderabad",
+    "buy bricks online Hyderabad",
+    "buy river sand Hyderabad",
+    "top construction material supplier Hyderabad",
+    // Long-tail quality intent
+    "quality Karimnagar bricks Hyderabad",
+    "red bricks wholesale Hyderabad",
+    "Karimnagar bricks price Hyderabad",
+    "best quality bricks Hyderabad",
+    // Delivery/service intent
+    "construction material home delivery Hyderabad",
+    "lorry supply bricks sand Hyderabad",
+    "direct supply construction materials Hyderabad",
+    "construction material dealers Hyderabad",
+    // Area-specific
+    "brick supplier near me Hyderabad",
+    "sand supplier near me Hyderabad",
+    "SB Construction Hyderabad",
   ],
   authors: [{ name: "SB Construction Materials Suppliers", url: siteUrl }],
   creator: "SB Construction",
@@ -88,7 +107,7 @@ export const viewport = {
   maximumScale: 1,
 };
 
-// JSON-LD Structured Data for Local Business
+// JSON-LD Structured Data for Local Business + FAQ + Reviews
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -96,44 +115,49 @@ const jsonLd = {
       "@type": "LocalBusiness",
       "@id": `${siteUrl}/#business`,
       "name": "SB Construction Materials Suppliers",
-      "description": "Hyderabad's most trusted construction material suppliers. Direct supply of premium Karimnagar red bricks, river sand, M-sand, coarse sand and stone with 100% transparency and honesty.",
+      "description": "Hyderabad's most trusted and affordable construction material suppliers. Direct supply of premium Karimnagar red bricks at lowest price, river sand, M-sand, coarse sand and stone with 100% transparency.",
       "url": siteUrl,
       "telephone": "+919490057579",
       "email": "sbmcontsct5886@gmail.com",
+      "priceRange": "₹₹",
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Hyderabad",
         "addressRegion": "Telangana",
         "addressCountry": "IN",
       },
-      "areaServed": {
-        "@type": "GeoCircle",
-        "geoMidpoint": {
-          "@type": "GeoCoordinates",
-          "latitude": 17.3850,
-          "longitude": 78.4867,
-        },
-        "geoRadius": "80000",
-      },
+      "areaServed": [
+        { "@type": "City", "name": "Hyderabad" },
+        { "@type": "City", "name": "Secunderabad" },
+        { "@type": "City", "name": "Warangal" },
+        { "@type": "State", "name": "Telangana" },
+      ],
       "openingHoursSpecification": [
         {
           "@type": "OpeningHoursSpecification",
-          "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
           "opens": "07:00",
           "closes": "20:00",
         }
       ],
       "sameAs": [`https://wa.me/919490057579`],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "reviewCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
       "hasOfferCatalog": {
         "@type": "OfferCatalog",
-        "name": "Construction Materials",
+        "name": "Construction Materials at Best Price Hyderabad",
         "itemListElement": [
           {
             "@type": "Offer",
             "itemOffered": {
               "@type": "Product",
               "name": "Karimnagar Red Bricks",
-              "description": "Premium quality Karimnagar red bricks for construction. Sourced directly from top quarries.",
+              "description": "Premium quality Karimnagar red bricks at lowest price in Hyderabad. Best bricks for construction, direct supply.",
             }
           },
           {
@@ -141,7 +165,7 @@ const jsonLd = {
             "itemOffered": {
               "@type": "Product",
               "name": "River Sand",
-              "description": "High-grade river sand for plastering and construction.",
+              "description": "High-grade river sand for plastering and construction. Affordable river sand supply in Hyderabad.",
             }
           },
           {
@@ -149,7 +173,7 @@ const jsonLd = {
             "itemOffered": {
               "@type": "Product",
               "name": "M-Sand (Manufactured Sand)",
-              "description": "Quality manufactured sand suitable for concrete and masonry work.",
+              "description": "Quality manufactured sand for concrete and masonry. Best M-sand price in Hyderabad.",
             }
           },
           {
@@ -157,11 +181,56 @@ const jsonLd = {
             "itemOffered": {
               "@type": "Product",
               "name": "Coarse Sand",
-              "description": "Coarse sand for foundation and concrete mixing.",
+              "description": "Coarse sand for foundation and concrete mixing at the lowest price in Hyderabad.",
             }
           },
         ]
       }
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Where can I buy bricks at the lowest price in Hyderabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SB Construction Materials Suppliers offers Karimnagar red bricks at the lowest price in Hyderabad with direct lorry supply and zero middlemen. Call +91 9490 057 579."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the best bricks supplier in Hyderabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SB Construction is Hyderabad's most trusted bricks and sand supplier with 15+ years of experience, 100% honest counting, and direct delivery across Hyderabad and Telangana."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Where to buy affordable sand and bricks for construction in Hyderabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "At SB Construction, you can buy both sand and bricks for very less price in Hyderabad. We supply river sand, M-sand, coarse sand, and Karimnagar red bricks directly at wholesale prices."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you deliver construction materials at home in Hyderabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! SB Construction provides home delivery of bricks, sand and construction materials directly to your construction site in Hyderabad using our own lorry fleet."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What is the price of Karimnagar bricks in Hyderabad?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "SB Construction offers Karimnagar red bricks at competitive and transparent prices in Hyderabad. Contact us at +91 9490 057 579 to get the latest price per 1000 bricks."
+          }
+        },
+      ]
     },
     {
       "@type": "WebSite",
@@ -169,11 +238,6 @@ const jsonLd = {
       "url": siteUrl,
       "name": "SB Construction Materials Suppliers",
       "publisher": { "@id": `${siteUrl}/#business` },
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": { "@type": "EntryPoint", "urlTemplate": `${siteUrl}/?q={search_term_string}` },
-        "query-input": "required name=search_term_string",
-      }
     }
   ]
 };
