@@ -131,9 +131,9 @@ export default function HomePage() {
       <section className="hero">
         <div className="container hero-content" style={{ position: 'relative', overflow: 'hidden' }}>
           <ParticleBg />
-          <div style={{ textAlign: 'center', marginBottom: '1rem', position: 'relative', zIndex: 10 }}>
-            <Image src="/logo.png" alt="SB Construction Logo" width={250} height={250} style={{ objectFit: 'contain' }} priority />
-          </div>
+          <h1 className="hero-title">
+            <span className="text-primary">SB</span> CONSTRUCTION <br /> MATERIALS SUPPLIERS
+          </h1>
           <p className="hero-tagline">Trusted Construction Material Suppliers in Hyderabad</p>
           <p className="hero-desc">
             Direct supply using our own lorries. Zero middlemen. Uncompromised honesty and premium quality for your build.
