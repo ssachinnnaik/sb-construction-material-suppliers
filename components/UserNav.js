@@ -55,7 +55,7 @@ export default function UserNav() {
         {/* Circular Logo */}
         <Link href="/home" className="user-nav-logo">
           <span className="nav-logo-circle">
-            <Image src="/logo.png" alt="SB Construction" width={48} height={48} style={{ objectFit: 'cover', width: '100%', height: '100%' }} priority />
+            <Image src="/logo.png" alt="SB Construction" width={46} height={46} style={{ objectFit: 'contain', width: '100%', height: '100%', padding: '2px' }} priority />
           </span>
           <span className="nav-logo-text"><strong>SB</strong> Construction</span>
         </Link>
