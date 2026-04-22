@@ -222,7 +222,12 @@ export default function LandingPage() {
           <p style={{ marginTop: '2rem', fontSize: '0.85rem', color: '#555' }}>
             &copy; {new Date().getFullYear()} SB Construction Materials Suppliers. All rights reserved.
           </p>
-          <p style={{ marginTop: '0.75rem' }}><a href="/admin" style={{ opacity: 0.4, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Admin</a></p>
+          <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+            <Link href="/karimnagar-red-bricks-price-hyderabad" style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textDecoration: 'underline' }}>
+              Current Price of Karimnagar Bricks per 1000 in Hyderabad
+            </Link>
+          </div>
+          <p style={{ marginTop: '1rem' }}><a href="/admin" style={{ opacity: 0.4, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Admin</a></p>
         </div>
       </footer>
 
