@@ -2,6 +2,7 @@
 
 import { Phone, MessageCircle, Truck, ShieldCheck, Star, ArrowRight, HardHat, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const faqs = [
@@ -51,11 +52,9 @@ export default function LandingPage() {
             <HardHat size={16} />
             <span>Trusted Since 2010 · Hyderabad</span>
           </div>
-          {/* H1 contains primary keyword naturally */}
-          <h1 className="landing-title">
-            <span className="text-primary">SB</span> Construction<br />
-            <span className="landing-title-sub">Materials Suppliers</span>
-          </h1>
+          <div style={{ textAlign: 'center', marginBottom: '1rem' }}>
+            <Image src="/logo.png" alt="SB Construction Logo" width={250} height={250} style={{ objectFit: 'contain' }} priority />
+          </div>
           <p className="landing-tagline">
             Best Bricks &amp; Sand Supplier in Hyderabad — Lowest Price, Direct Delivery
           </p>

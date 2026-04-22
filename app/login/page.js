@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, Mail, Lock, ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 
 export default function Login() {
   const [mode, setMode] = useState('LOGIN'); // LOGIN, RESET_OTP, RESET_CONFIRM
@@ -94,8 +95,7 @@ export default function Login() {
         {mode === 'LOGIN' && (
           <>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-              <ShieldCheck size={50} style={{ color: 'var(--primary)', margin: '0 auto 1rem auto' }} />
-              <h2 className="modal-title" style={{ fontSize: '1.8rem', textShadow: 'none' }}>Control Center</h2>
+              <Image src="/logo.png" alt="SB Construction Logo" width={200} height={200} style={{ margin: '0 auto 1rem auto', objectFit: 'contain' }} priority />
               <p className="modal-subtitle">Secure High-End Admin Access</p>
             </div>
             

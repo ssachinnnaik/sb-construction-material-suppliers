@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, BookMarked, LogOut, HardHat } from 'lucide-react';
+import { Home, BookMarked, LogOut } from 'lucide-react';
 
 export default function UserNav() {
   const [userName, setUserName] = useState('');
@@ -53,8 +54,7 @@ export default function UserNav() {
       <div className="container user-nav-inner">
         {/* Logo */}
         <Link href="/home" className="user-nav-logo">
-          <HardHat size={22} />
-          <span><strong>SB</strong> Construction</span>
+          <Image src="/logo.png" alt="SB Construction Logo" width={150} height={40} style={{ objectFit: 'contain' }} priority />
         </Link>
 
         {/* Links */}
