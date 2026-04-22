@@ -2,6 +2,7 @@
 
 import { Phone, MessageCircle, Truck, ShieldCheck, Star, ArrowRight, HardHat, MapPin, Clock, ChevronDown, ChevronUp } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 const faqs = [
@@ -48,7 +49,9 @@ export default function LandingPage() {
         <div className="landing-hero-bg" aria-hidden="true" />
         <div className="container landing-hero-content">
           <div className="landing-badge">
-            <HardHat size={16} />
+            <span className="nav-logo-circle" style={{ width: 22, height: 22, minWidth: 22 }}>
+              <Image src="/logo.png" alt="SB Construction" width={22} height={22} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
+            </span>
             <span>Trusted Since 2010 · Hyderabad</span>
           </div>
           {/* H1 contains primary keyword naturally */}

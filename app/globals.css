@@ -1074,6 +1074,28 @@ ul { list-style: none; }
 
 .user-nav-logo strong { color: var(--primary); }
 
+/* Circular logo */
+.nav-logo-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(245,196,0,0.5);
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.nav-logo-text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
 .user-nav-links {
   display: flex;
   align-items: center;
@@ -1283,7 +1305,7 @@ ul { list-style: none; }
   .landing-stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
 
   .user-nav-greeting { display: none; }
-  .user-nav-logo span { display: none; }
+  .nav-logo-text { display: none; }
   .user-nav-link span { display: none; }
 
   .catalog-header { flex-direction: column; }

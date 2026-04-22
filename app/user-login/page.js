@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { HardHat, Phone, ArrowLeft, ArrowRight } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 export default function UserLogin() {
@@ -51,7 +52,7 @@ export default function UserLogin() {
         {/* Header */}
         <div className="user-login-header">
           <div className="user-login-icon">
-            <HardHat size={36} />
+            <Image src="/logo.png" alt="SB Construction" width={72} height={72} style={{ objectFit: 'cover', width: '100%', height: '100%', borderRadius: '50%' }} priority />
           </div>
           <h1 className="user-login-title">Welcome to SB Construction</h1>
           <p className="user-login-subtitle">
